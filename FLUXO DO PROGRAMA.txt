@@ -1,0 +1,22 @@
+1. INICIALIZAÇÃO
+   main.js → carrega Config → inicializa módulos
+
+2. CARREGAMENTO
+   ChartLoader → parseia JSON → cria objetos Note
+   AudioEngine → carrega backing track + samples
+   MIDIManager → conecta dispositivos
+
+3. GAME LOOP
+   Game.js requestAnimationFrame:
+   ├─ TimeSync: calcula tempo atual
+   ├─ NoteHighway: atualiza posições das notas
+   ├─ Renderer: desenha frame
+   └─ HitDetector: verifica janela de acerto
+
+4. INPUT DO USUÁRIO
+   MIDIManager → EventBus → HitDetector
+   ├─ Acertou? → ScoreManager + VisualFX + SamplePlayer
+   └─ Errou? → VisualFX miss
+
+5. FINALIZAÇÃO
+   Música termina → ScoreManager calcula resultado

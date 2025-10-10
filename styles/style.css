@@ -1,0 +1,39 @@
+body { 
+    font-family: monospace; 
+    background-color: #1e1e1e; 
+    color: #d4d4d4; 
+    padding: 20px; 
+}
+
+#output { 
+    border: 1px solid #555; 
+    padding: 15px; 
+    height: 400px; 
+    overflow-y: scroll; 
+}
+
+.note-on { 
+    color: #569cd6; 
+}
+
+/* Design System */
+--bg-primary: #0a0a0a        /* Fundo principal - preto suave */
+--bg-secondary: #1a1a1a      /* Superfícies elevadas */
+--bg-tertiary: #242424       /* Cards, panels */
+
+--border-subtle: #2a2a2a     /* Bordas discretas */
+--border-medium: #3a3a3a     /* Separadores */
+
+--text-primary: #e8e8e8      /* Texto principal */
+--text-secondary: #9a9a9a    /* Texto secundário */
+--text-muted: #6a6a6a        /* Labels, hints */
+
+--accent-primary: #f0f0f0    /* Elementos interativos */
+--accent-hit: #ffffff        /* Flash de acerto */
+
+/* Cores por instrumento (sutis) */
+--kick: #d4a574              /* Laranja queimado */
+--snare: #7494b8             /* Azul acinzentado */
+--hihat: #88a880             /* Verde oliva */
+--tom: #b88894               /* Rosa acinzentado */
+--cymbal: #a89484            /* Bronze suave */
