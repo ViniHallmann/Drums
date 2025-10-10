@@ -1,0 +1,16 @@
+body { 
+    font-family: monospace; 
+    background-color: #1e1e1e; 
+    color: #d4d4d4; 
+    padding: 20px; 
+}
+
+#output { 
+    border: 1px solid #555; 
+    padding: 15px; 
+    height: 400px; 
+    overflow-y: scroll; 
+}
+.note-on { 
+    color: #569cd6; 
+}
