@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Teste de Entrada MIDI</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Leitor de Entrada MIDI</h1>
+    <div id="output">Aguardando entrada MIDI...</div>
+
+    <script src="midi-listener.js" defer></script>
+</body>
+</html>
+
