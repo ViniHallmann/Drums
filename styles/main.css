@@ -110,6 +110,12 @@ input[type="range"] {
   flex-shrink: 0;
 }
 
+.header-center {
+  display: flex;
+  align-items: baseline;
+  gap: var(--spacing-md);
+}
+
 .header-left {
   display: flex;
   align-items: baseline;
@@ -307,9 +313,14 @@ input[type="range"] {
    ============================================ */
 
 .midi-status {
-  position: fixed;
+  /* position: fixed;
   bottom: var(--spacing-lg);
-  right: var(--spacing-lg);
+  right: var(--spacing-lg); */
+  position: relative !important;
+  top: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  left: auto !important;
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);

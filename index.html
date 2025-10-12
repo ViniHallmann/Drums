@@ -15,7 +15,13 @@
         <header class="app-header">
             <div class="header-left">
                 <h1 class="app-title">Drum Learning</h1>
-                <span class="song-info" id="songInfo">Selecione uma música</span>
+            </div>
+            <div class="header-center">
+                <!-- Status de conexão MIDI no header -->
+                <div class="midi-status" id="midiStatus">
+                    <div class="status-indicator"></div>
+                    <span class="status-text">MIDI</span>
+                </div>
             </div>
             <div class="header-right">
                 <button class="btn-icon" id="btnSettings" aria-label="Configurações">
@@ -25,6 +31,7 @@
                     </svg>
                 </button>
             </div>
+            
         </header>
 
         <!-- Área principal do canvas -->
@@ -119,12 +126,6 @@
                 </div>
             </div>
         </footer>
-
-        <!-- Status de conexão MIDI -->
-        <div class="midi-status" id="midiStatus">
-            <div class="status-indicator"></div>
-            <span class="status-text">MIDI: Desconectado</span>
-        </div>
 
     </div>
 
