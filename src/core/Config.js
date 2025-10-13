@@ -1,25 +1,19 @@
-// if (navigator.requestMIDIAccess) {
-//     console.log('Ótimo! Seu navegador suporta a Web MIDI API.');
-//     navigator.requestMIDIAccess().then(onMIDISuccess, onMIDIFailure);
-// } else {
-//     console.error('Que pena! Seu navegador não suporta a Web MIDI API.');
-//     outputElement.innerHTML = 'Seu navegador não suporta a Web MIDI API. Tente usar o Google Chrome ou Microsoft Edge.';
-// }
+import Logger from '../utils/Logger.js';
 
 function getMIDIAccess() {
     return navigator.requestMIDIAccess().then(onMIDISuccess, onMIDIFailure);
 }
 
 const VisualConfig = {
-    CANVAS_WIDTH: 800,
-    CANVAS_HEIGHT: 600,
+    CANVAS_WIDTH: 1280,
+    CANVAS_HEIGHT: 720,
     NOTE_HEIGHT: 20,
     NOTE_WIDTH: 100,
-    HIT_LINE_POSITION: [150, 0], // x, y
+    HIT_LINE_X: 150,
     KICK_COLOR: '#FF0000',
     SNARE_COLOR: '#00FF00',
     HI_HAT_COLOR: '#0000FF',
-    CRAS_CYMBAL_COLOR: '#FFFF00',
+    CRASH_CYMBAL_COLOR: '#FFFF00',
     RIDE_CYMBAL_COLOR: '#FF00FF',
     HIGH_TOM_COLOR: '#00FFFF',
     MID_TOM_COLOR: '#FFA500',
@@ -34,6 +28,7 @@ const VisualConfig = {
 const GameplayConfig = {
     scrollSpeed: 300, // pixels per second
     hitWindow: 0.15, // seconds
+    lookAheadTime: 3, // seconds
     scorePerHit: 100,
     maxComboMultiplier: 5,
     difficultyLevels: {
@@ -65,16 +60,6 @@ const drumMap = {
     };
 const InputConfig = {
     midiMapping: {
-
-        //{
-        // 36: { 
-        //     name: 'Kick',
-        //     lane: 0,
-        //     color: '#d4a574',
-        //     sample: 'kick.wav',
-        //     aliases: [35] // algumas baterias usam nota diferente
-        // }
-        // }
         36: {
             name: 'kick',
             lane: 0,

@@ -1,5 +1,9 @@
 import Config from './Config.js';
-import { NoteHighway } from '../gameplay/NoteHighway.js';
+import  NoteHighway  from '../gameplay/NoteHighway.js';
+import HitDetector from '../gameplay/HitDetector.js';
+import Logger from '../utils/Logger.js';
+import GameClock from './GameClock.js';
+import Metronome from './Metronome.js';
 
 // Game.js (orquestrador principal)
 //   ├─ init()
@@ -26,6 +30,12 @@ export default class Game {
         this.lastFrameTime = 0;
         this.deltaTime = 0;
 
+        this.clock       = new GameClock();
+        this.noteHighway = new NoteHighway(this.renderer, this.config);
+        this.hitDetector = new HitDetector(this.eventBus, this.config.gameplay);
+        this.metronome   = new Metronome(this.config);
+        
+
         // Componentes do jogo (a serem implementados)
         // this.timeSync = new TimeSync(config.timing);
         // this.noteHighway = new NoteHighway(renderer, config.gameplay);
@@ -34,17 +44,54 @@ export default class Game {
 
         // Bind do loop para manter o contexto
         this.gameLoop = this.gameLoop.bind(this);
+ 
+        this.isPlaying = false;
+    }
+
+    _loadMockChart() {
+        const mockNotes = [
+            { time: 0.5, lane: 0, midiNote: 36, velocity: 100 },
+            { time: 0.5, lane: 2, midiNote: 42, velocity: 70 },
+
+            { time: 1.0, lane: 2, midiNote: 42, velocity: 70 },
+
+            { time: 2.0, lane: 0, midiNote: 36, velocity: 100 },
+            { time: 3.0, lane: 0, midiNote: 36, velocity: 100 },
+
+
+        
+            { time: 1.5, lane: 1, midiNote: 38, velocity: 90 },
+            { time: 4, lane: 1, midiNote: 38, velocity: 90 },
+            
+            
+            
+            { time: 1.5, lane: 2, midiNote: 42, velocity: 70 },
+            { time: 2.0, lane: 2, midiNote: 42, velocity: 70 },
+            { time: 2.5, lane: 2, midiNote: 42, velocity: 70 },
+            { time: 3.0, lane: 2, midiNote: 42, velocity: 70 },
+            { time: 3.5, lane: 2, midiNote: 42, velocity: 70 },
+            { time: 4.0, lane: 2, midiNote: 42, velocity: 70 },
+            { time: 4.5, lane: 2, midiNote: 42, velocity: 70 },
+            { time: 5.0, lane: 2, midiNote: 42, velocity: 70 },
+            { time: 5.0, lane: 0, midiNote: 36, velocity: 100 },
+            
+        ];
+        
+        this.noteHighway.loadChart(mockNotes);
+        console.log('Mock chart loaded');
     }
 
     init() {
         // Inicializar componentes do jogo
         // this.timeSync.init();
-        // this.noteHighway.init();
-        // this.hitDetector.init();
+        
         // this.audioEngine.init();
 
-        this.noteHighway = new NoteHighway(this.renderer, this.config);
+        
         this.noteHighway.init();
+        
+        this.hitDetector.init();
+        this._loadMockChart();
     }
     
     start() {
@@ -52,26 +99,26 @@ export default class Game {
         this.isRunning = true;
         this.lastFrameTime = performance.now();
         requestAnimationFrame(this.gameLoop);
-        console.log('Game started');
+        //Logger.info('Game started');
     }
 
     pause() {
+        if (!this.isRunning) return;
         this.isRunning = false;
-        console.log('Game paused');
+        this.clock.pause();
     }
 
     stop() {
         this.isRunning = false;
-        // Resetar estado do jogo se necessário
-        console.log('Game stopped');
+        this.clock.reset();
     }
 
     gameLoop(currentTime) {
         if (!this.isRunning) return;
 
-        this.deltaTime = (currentTime - this.lastFrameTime) / 1000; // em segundos
+        this.deltaTime = (currentTime - this.lastFrameTime) / 1000;
         this.lastFrameTime = currentTime;
-
+        
         this.update(this.deltaTime);
         this.render();
 
@@ -79,11 +126,11 @@ export default class Game {
     }
 
     update(deltaTime) {
-        return;
+        const currentTime = this.clock.getCurrentTime();
         // Atualizar componentes do jogo
-        // this.timeSync.update(deltaTime);
-        //this.noteHighway.update(deltaTime);
-        // this.hitDetector.update(deltaTime);
+        this.metronome.update(currentTime);
+        this.noteHighway.update(deltaTime, currentTime);
+        this.hitDetector.update(deltaTime, currentTime, this.noteHighway.activeNotes);
         // this.audioEngine.update(deltaTime);
     }
 
@@ -91,7 +138,28 @@ export default class Game {
         this.renderer.clear();
         // Renderizar componentes do jogo
         this.noteHighway.render(this.renderer);
+        this.metronome.drawVisual(this.renderer, this.config.visual.HIT_LINE_X);
         // this.hitEffects.render(this.renderer);
         // this.ui.render(this.renderer);
+    }
+
+    startMusic() {
+        this.clock.start();
+        this.isPlaying = true;
+        this.noteHighway.currentNoteIndex = 0;  // Apenas reset o índice
+        this.noteHighway.activeNotes = [];      // Limpa notas ativas
+        
+        // Recarregar chart do zero
+        this._loadMockChart();
+    }
+
+    pauseMusic() {
+        this.isPlaying = false;
+        //Logger.info('Music paused');
+    }
+
+    resumeMusic() {
+        this.isPlaying = true;
+        //Logger.info('Music resumed');
     }
 }

@@ -13,11 +13,12 @@ import MIDIManager from './midi/MIDIManager.js';
 import Config from './core/Config.js';
 import Game from './core/Game.js';
 import Renderer from './rendering/Renderer.js';
+import Logger from './utils/Logger.js';
 
 
 const midiStatus = document.getElementById('midiStatus');
 
-function configureEventBus(eventBus) {
+function configureEventBus(eventBus, hitDetector) {
     eventBus.on('midi:connected', () => {
         console.log('Evento: MIDI conectado');
         midiStatus.classList.add('connected');
@@ -38,9 +39,67 @@ function configureEventBus(eventBus) {
 
     eventBus.on('midi:hit', (data) => {
         console.log(`Evento: MIDI hit ${data.name} (note: ${data.note})`);
+        hitDetector.checkHit(data.note);
+    });
+
+    eventBus.on('note:hit', (data) => {
+        console.log(`Evento: Nota acertada! Time diff: ${data.timeDiff.toFixed(3)}s`, data.note);
+        console.log(data.accuracy);
+    });
+
+    eventBus.on('note:miss', (data) => {
+        console.log(`Evento: Nota perdida! (note: ${data.midiNote})`);
+
     });
        
 }
+
+function setupKeyboardControls(game, eventBus) {
+    document.addEventListener('keydown', (e) => {
+        if (e.code === 'Space') {
+            if (game.clock.isRunning) {
+                game.pauseMusic();
+            } else {
+                game.clock.getCurrentTime() === 0 ? game.startMusic() : game.resumeMusic();
+            }
+        }
+        
+        if (e.code === 'KeyR') {
+            game.clock.reset();
+            game.noteHighway.currentNoteIndex = 0;
+            game.noteHighway.activeNotes = [];
+            game.startMusic();
+        }
+        
+        if (e.code === 'KeyK') {
+            eventBus.emit('midi:hit', { note: 36, name: 'KICK', lane: 0, velocity: 100 });
+        }
+        if (e.code === 'KeyS') {
+            eventBus.emit('midi:hit', { note: 38, name: 'SNARE', lane: 1, velocity: 100 });
+        }
+    });
+    
+}
+
+// class App {
+//     constructor() {
+//         this.eventBus      = new EventBus();
+//         this.midiManager   = new MIDIManager(this.eventBus, Config.input.midiMapping);
+//         this.renderer      = new Renderer('gameCanvas', Config.visual);
+//         this.game          = new Game(this.eventBus, this.renderer, this.midiManager, Config);
+//     }
+    
+//     async init() {
+//         configureEventBus(this.eventBus);
+//         const isConnected = await this.midiManager.init();
+//         isConnected ? console.log('Dispositivos MIDI acessíveis.') : console.error('Nenhum dispositivo MIDI encontrado ou permissão negada.');
+//         this.game.init();
+//     }
+    
+//     start() {
+//         this.game.start();
+//     }
+// }
     
 async function initApp() {
     const eventBus      = new EventBus();
@@ -48,15 +107,17 @@ async function initApp() {
     const renderer      = new Renderer('gameCanvas', Config.visual);
     const game          = new Game(eventBus, renderer, midiManager, Config);
 
-    configureEventBus(eventBus);
+    
 
     const isConnected = await midiManager.init();
-    isConnected ? console.log('Dispositivos MIDI acessíveis.') : console.error('Nenhum dispositivo MIDI encontrado ou permissão negada.');
 
     game.init();
+    configureEventBus(eventBus, game.hitDetector);
     game.start();
 
-    //renderer.drawDebugGrid();
+    setupKeyboardControls(game, eventBus);
+
+
     
 }
 
