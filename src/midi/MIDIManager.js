@@ -4,7 +4,7 @@
 // - isConnected (boolean)
 // - eventBus (referência ao EventBus para emitir eventos)
 // - drumMap (recebido do Config, mapeia MIDI note → lane)
-
+import Logger from '../utils/Logger.js';
 export default class MIDIManager {
     constructor(eventBus, drumMap) {
         this.midiAccess = null;
@@ -32,7 +32,7 @@ export default class MIDIManager {
     }
 
     onMIDISuccess() {
-        console.log('Acesso MIDI concedido! Conectado aos dispositivos.<br>');
+        //Logger.info('MIDI ready!');
 
         for (var input of this.midiAccess.inputs.values()) {
             input.onmidimessage = this.onMIDIMessage.bind(this);
@@ -57,9 +57,10 @@ export default class MIDIManager {
                     timestamp: message.timeStamp,
                     lane: drum.lane
                 });
-            } else {
-                console.warn(`MIDI Note ${note} not mapped to any drum.`);
-            }
+            } //else {
+
+                //Logger.warn(`Note not mapped: ${note}`);
+            //}
         }
 
     }

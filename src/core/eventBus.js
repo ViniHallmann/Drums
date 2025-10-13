@@ -8,7 +8,7 @@
 //   lane: number         // ex: 0
 // }
 // 'midi:disconnected' → { reason: string }
-
+import Logger from '../utils/Logger.js';
 export default class EventBus {
     constructor() {
         this.events = {};
