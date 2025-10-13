@@ -1,9 +1,4 @@
-/**
- * Renderer.js
- * Abstração do Canvas 2D para renderização do jogo
- * Responsável apenas por COMO desenhar, não O QUE desenhar
- */
-
+import Logger from '../utils/Logger.js';
 class Renderer {
     constructor(canvasId, visualConfig) {
         this.canvas = document.getElementById(canvasId);
