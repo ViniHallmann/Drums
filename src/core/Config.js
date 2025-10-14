@@ -7,8 +7,8 @@ function getMIDIAccess() {
 const VisualConfig = {
     CANVAS_WIDTH: 1280,
     CANVAS_HEIGHT: 720,
-    NOTE_HEIGHT: 50,
-    NOTE_WIDTH: 60,
+    NOTE_HEIGHT: 45,
+    NOTE_WIDTH: 45,
     HIT_LINE_X: 150,
     KICK_COLOR: '#FF0000',
     SNARE_COLOR: '#00FF00',
@@ -27,11 +27,12 @@ const VisualConfig = {
 };
 
 const GameplayConfig = {
-    scrollSpeed: 300, // pixels per second
-    hitWindow: 0.15, // seconds
-    lookAheadTime: 3, // seconds
+    scrollSpeed: 300, 
+    hitWindow: 0.15, 
+    lookAheadTime: 4,
     scorePerHit: 100,
     maxComboMultiplier: 5,
+    CHART_START_DELAY: 2.0, // seconds
     difficultyLevels: {
         easy: 1,
         medium: 2,

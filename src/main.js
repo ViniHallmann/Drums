@@ -83,7 +83,6 @@ function setupKeyboardControls(game, eventBus) {
             eventBus.emit('midi:hit', { note: 42, name: 'HIHAT CLOSED', lane: 2, velocity: 100 });
         }
         
-        // Teclas numéricas para trocar charts rapidamente
         if (e.code === 'Digit1') {
             game.loadChart('assets/charts/01-basic-rock-beat.json').catch(console.error);
         }

@@ -36,7 +36,7 @@ export default class NoteHighway {
     }
 
     _spawnNotes() {
-        const lookAheadTime = 4;
+        const lookAheadTime = this.config.gameplay.lookAheadTime || 4;
         
         // Enquanto houver notas para adicionar
         while (this.currentNoteIndex < this.allNotes.length) {
@@ -66,6 +66,7 @@ export default class NoteHighway {
     }
 
     update(deltaTime, currentTime) {
+        const leadTime = this.config.gameplay.LEAD_TIME || 4.0;
         this.currentTime = currentTime;
     
         this._spawnNotes();

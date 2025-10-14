@@ -10,7 +10,6 @@ export default class GameClock {
     start(offset = 0) {
         this.startTime = performance.now();
         this.pausedTime = 0;
-        this.offset = offset;
         this.isRunning = true;
     }
     
@@ -31,6 +30,7 @@ export default class GameClock {
         this.startTime = 0;
         this.pausedTime = 0;
         this.lastPauseTime = 0;
+        this.offset = 0;
         this.isRunning = false;
     }
     
@@ -41,7 +41,9 @@ export default class GameClock {
         return (performance.now() - this.startTime - this.pausedTime) / 1000 + this.offset;
     }
     
-    setOffset(offsetMs) {
-        this.offset = offsetMs / 1000;
+    setOffset(offsetInSeconds) {
+        this.offset = offsetInSeconds;
     }
+
+
 }
