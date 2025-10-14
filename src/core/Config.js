@@ -9,7 +9,7 @@ const VisualConfig = {
     CANVAS_HEIGHT: 720,
     NOTE_HEIGHT: 45,
     NOTE_WIDTH: 45,
-    HIT_LINE_X: 150,
+    HIT_LINE_X: 250,
     KICK_COLOR: '#FF0000',
     SNARE_COLOR: '#00FF00',
     HI_HAT_COLOR: '#0000FF',
@@ -32,7 +32,7 @@ const GameplayConfig = {
     lookAheadTime: 4,
     scorePerHit: 100,
     maxComboMultiplier: 5,
-    CHART_START_DELAY: 2.0, // seconds
+    CHART_START_DELAY: 2.0, 
     difficultyLevels: {
         easy: 1,
         medium: 2,

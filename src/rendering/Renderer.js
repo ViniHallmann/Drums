@@ -1,5 +1,5 @@
 import Logger from '../utils/Logger.js';
-class Renderer {
+export default class Renderer {
     constructor(canvasId, visualConfig) {
         this.canvas = document.getElementById(canvasId);
         if (!this.canvas) {
@@ -230,37 +230,37 @@ class Renderer {
         this.ctx.translate(-centerX, -centerY);
     }
 
-    drawDebugGrid(spacing = 50, color = '#2a2a2a') {
-        // Linhas verticais
-        for (let x = 0; x <= this.width; x += spacing) {
-            this.drawLine(x, 0, x, this.height, color, 0.5, 0.3);
-        }
+    // drawDebugGrid(spacing = 50, color = '#2a2a2a') {
+    //     // Linhas verticais
+    //     for (let x = 0; x <= this.width; x += spacing) {
+    //         this.drawLine(x, 0, x, this.height, color, 0.5, 0.3);
+    //     }
 
-        // Linhas horizontais
-        for (let y = 0; y <= this.height; y += spacing) {
-            this.drawLine(0, y, this.width, y, color, 0.5, 0.3);
-        }
+    //     // Linhas horizontais
+    //     for (let y = 0; y <= this.height; y += spacing) {
+    //         this.drawLine(0, y, this.width, y, color, 0.5, 0.3);
+    //     }
 
-        // Números nas linhas (a cada 100px)
-        if (spacing >= 50) {
-            for (let x = 0; x <= this.width; x += 100) {
-                this.drawText(`${x}`, x + 2, 10, { 
-                    font: '10px monospace', 
-                    color: '#666',
-                    alpha: 0.5 
-                });
-            }
-            for (let y = 0; y <= this.height; y += 100) {
-                if (y === 0) continue;
-                this.drawText(`${y}`, 5, y + 2, { 
-                    font: '10px monospace', 
-                    color: '#666',
-                    alpha: 0.5 
-                });
-            }
-        }
-    }
+    //     // Números nas linhas (a cada 100px)
+    //     if (spacing >= 50) {
+    //         for (let x = 0; x <= this.width; x += 100) {
+    //             this.drawText(`${x}`, x + 2, 10, { 
+    //                 font: '10px monospace', 
+    //                 color: '#666',
+    //                 alpha: 0.5 
+    //             });
+    //         }
+    //         for (let y = 0; y <= this.height; y += 100) {
+    //             if (y === 0) continue;
+    //             this.drawText(`${y}`, 5, y + 2, { 
+    //                 font: '10px monospace', 
+    //                 color: '#666',
+    //                 alpha: 0.5 
+    //             });
+    //         }
+    //     }
+    // }
 
 }
 
-export default Renderer;
+//export default Renderer;

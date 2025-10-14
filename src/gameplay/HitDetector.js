@@ -46,7 +46,6 @@ export default class HitDetector {
                 }
             }
         }
-        
         this.eventBus.emit('note:miss', { midiNote: midiNote });
         return false;
     }

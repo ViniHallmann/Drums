@@ -38,11 +38,9 @@ export default class NoteHighway {
     _spawnNotes() {
         const lookAheadTime = this.config.gameplay.lookAheadTime || 4;
         
-        // Enquanto houver notas para adicionar
         while (this.currentNoteIndex < this.allNotes.length) {
             const note = this.allNotes[this.currentNoteIndex];
             
-            // Verifica se deve aparecer agora
             const timeUntilNote = note.time - this.currentTime;
             
             if (timeUntilNote <= lookAheadTime) {
@@ -72,10 +70,10 @@ export default class NoteHighway {
         this._spawnNotes();
         
         for (const note of this.activeNotes) {
-            note.update(currentTime, this.scrollSpeed, this.hitLineX);
+            note.update(currentTime, this.scrollSpeed);
         }
         
-        this._cullNotes();
+        //this._cullNotes();
     }
 
     //POR ENQUANTO NAO FAZ O BUILD BASEADO NA DIFICULDADE

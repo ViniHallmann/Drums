@@ -40,10 +40,10 @@ export class Note {
         this.originalColor = this.color;
     }
 
-    update(currentTime, scrollSpeed, hitLineX) {
+    update(currentTime, scrollSpeed) {
         const timeToHit = this.time - currentTime;
         const distanceToHit = timeToHit * scrollSpeed;
-        this.x = hitLineX + distanceToHit;
+        this.x = this.config.visual.HIT_LINE_X + distanceToHit;
 
         if (this.x + this.width < 0) {
             this.isActive = false;

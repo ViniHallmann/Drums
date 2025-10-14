@@ -33,10 +33,9 @@ export default class Metronome {
         if (!this.visualEnabled) return;
         
         const flashAlpha = this.getBeatFlashAlpha();
-        if (flashAlpha <= 0) return;
+        //if (flashAlpha <= 0) return;
         
-        // Pulso na hit line
-        const color = this.isDownbeat() ? '#ffffff' : '#888888';
+        const color = this.isDownbeat() ? '#b53030ff' : '#48bc22ff';
         const width = this.isDownbeat() ? 6 : 4;
         
         renderer.drawLine(

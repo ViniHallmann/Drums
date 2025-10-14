@@ -107,7 +107,7 @@ async function initApp() {
     game.start();
 
     setupKeyboardControls(game, eventBus);
-    setupChartSelector(game);
+    //setupChartSelector(game);
 }
 
 initApp();
