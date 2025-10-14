@@ -36,7 +36,7 @@ export default class NoteHighway {
     }
 
     _spawnNotes() {
-        const lookAheadTime = 3;
+        const lookAheadTime = 4;
         
         // Enquanto houver notas para adicionar
         while (this.currentNoteIndex < this.allNotes.length) {

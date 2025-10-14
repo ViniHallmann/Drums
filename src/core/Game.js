@@ -5,6 +5,7 @@ import Logger from '../utils/Logger.js';
 import GameClock from './GameClock.js';
 import Metronome from './Metronome.js';
 import AudioEngine from '../audio/AudioEngine.js';
+import ChartLoader from '../chart/ChartLoader.js';
 
 // Game.js (orquestrador principal)
 //   ├─ init()
@@ -37,6 +38,9 @@ export default class Game {
         this.metronome   = new Metronome(this.config);
         
         this.audioEngine = new AudioEngine(this.config.audio);
+        this.chartLoader = new ChartLoader(this.config);
+        
+        this.currentChart = null;
         
 
         // Componentes do jogo (a serem implementados)
@@ -45,43 +49,39 @@ export default class Game {
         // this.hitDetector = new HitDetector(eventBus, config.gameplay);
         // this.audioEngine = new AudioEngine(config.audio);
 
-        // Bind do loop para manter o contexto
         this.gameLoop = this.gameLoop.bind(this);
  
         this.isPlaying = false;
     }
 
-    _loadMockChart() {
-        const mockNotes = [
-            { time: 0.5, lane: 0, midiNote: 36, velocity: 100 },
-            { time: 0.5, lane: 2, midiNote: 42, velocity: 70 },
+    /**
+     * Carrega um chart específico
+     * @param {string} chartPath - Caminho para o arquivo JSON do chart
+     */
+    async loadChart(chartPath) {
+        try {
+            this.currentChart = await this.chartLoader.loadChart(chartPath);
+            this.noteHighway.loadChart(this.currentChart.notes);
+            //Logger.info(`Chart loaded: ${this.currentChart.metadata.title}`);
+            return this.currentChart;
+        } catch (error) {
+            //Logger.error('Failed to load chart:', error);
+            throw error;
+        }
+    }
 
-            { time: 1.0, lane: 2, midiNote: 42, velocity: 70 },
+    /**
+     * Carrega o chart padrão (01-basic-rock-beat)
+     */
+    async loadDefaultChart() {
+        return await this.loadChart('assets/charts/01-basic-rock-beat.json');
+    }
 
-            { time: 2.0, lane: 0, midiNote: 36, velocity: 100 },
-            { time: 3.0, lane: 0, midiNote: 36, velocity: 100 },
-
-
-        
-            { time: 1.5, lane: 1, midiNote: 38, velocity: 90 },
-            { time: 4, lane: 1, midiNote: 38, velocity: 90 },
-            
-            
-            
-            { time: 1.5, lane: 2, midiNote: 42, velocity: 70 },
-            { time: 2.0, lane: 2, midiNote: 42, velocity: 70 },
-            { time: 2.5, lane: 2, midiNote: 42, velocity: 70 },
-            { time: 3.0, lane: 2, midiNote: 42, velocity: 70 },
-            { time: 3.5, lane: 2, midiNote: 42, velocity: 70 },
-            { time: 4.0, lane: 2, midiNote: 42, velocity: 70 },
-            { time: 4.5, lane: 2, midiNote: 42, velocity: 70 },
-            { time: 5.0, lane: 2, midiNote: 42, velocity: 70 },
-            { time: 5.0, lane: 0, midiNote: 36, velocity: 100 },
-            
-        ];
-        
-        this.noteHighway.loadChart(mockNotes);
-        console.log('Mock chart loaded');
+    /**
+     * Lista charts disponíveis
+     */
+    getAvailableCharts() {
+        return this.chartLoader.getAvailableCharts();
     }
 
     async init() {
@@ -91,7 +91,10 @@ export default class Game {
         
         this.noteHighway.init();
         this.hitDetector.init();
-        this._loadMockChart();
+        
+        // Carrega o chart padrão
+        await this.loadDefaultChart();
+        
         await this.audioEngine.init();
     }
     
@@ -128,7 +131,8 @@ export default class Game {
 
     update(deltaTime) {
         const currentTime = this.clock.getCurrentTime();
-        // Atualizar componentes do jogo
+        this.checkChartLoop();
+
         this.metronome.update(currentTime);
         this.noteHighway.update(deltaTime, currentTime);
         this.hitDetector.update(deltaTime, currentTime, this.noteHighway.activeNotes);
@@ -147,11 +151,61 @@ export default class Game {
     startMusic() {
         this.clock.start();
         this.isPlaying = true;
-        this.noteHighway.currentNoteIndex = 0;  // Apenas reset o índice
-        this.noteHighway.activeNotes = [];      // Limpa notas ativas
+        this.resetChart();
+    }
+
+    pauseMusic() {
+        this.clock.pause();
+        this.isPlaying = false;
+    }
+
+    resumeMusic() {
+        this.clock.resume();
+        this.isPlaying = true;
+    }
+
+    stopMusic() {
+        this.clock.reset();
+        this.isPlaying = false;
+        this.resetChart();
+    }
+
+    checkChartLoop() {
+        if (!this.currentChart) return;
         
-        // Recarregar chart do zero
-        this._loadMockChart();
+        const chartDuration = this.currentChart.metadata.duration || this.getChartDuration();
+        const currentTime = this.clock.getCurrentTime();
+        
+        if (currentTime >= chartDuration) {
+            this.resetChart();
+            this.clock.reset();
+            this.clock.start();
+        }
+    }
+
+    resetChart() {
+        this.noteHighway.currentNoteIndex = 0;
+        this.noteHighway.activeNotes = [];
+        
+        if (this.currentChart) {
+            this.noteHighway.loadChart(this.currentChart.notes);
+        }
+    }
+
+    getChartDuration() {
+        if (!this.currentChart || !this.currentChart.notes.length) return 0;
+        
+        const lastNote = this.currentChart.notes[this.currentChart.notes.length - 1];
+        return this.convertTicksToSeconds(lastNote.time) + 2; // +2 segundos de buffer
+    }
+
+    convertTicksToSeconds(ticks) {
+        const bpm = this.currentChart?.metadata?.bpm || 120;
+        const ticksPerBeat = 128; // Baseado no seu chart (0, 32, 64, 96, 128...)
+        const beatsPerSecond = bpm / 60;
+        const ticksPerSecond = ticksPerBeat * beatsPerSecond;
+        
+        return ticks / ticksPerSecond;
     }
 
 }

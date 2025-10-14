@@ -82,8 +82,78 @@ function setupKeyboardControls(game, eventBus) {
         if (e.code === 'KeyH') {
             eventBus.emit('midi:hit', { note: 42, name: 'HIHAT CLOSED', lane: 2, velocity: 100 });
         }
+        
+        // Teclas numéricas para trocar charts rapidamente
+        if (e.code === 'Digit1') {
+            game.loadChart('assets/charts/01-basic-rock-beat.json').catch(console.error);
+        }
+        if (e.code === 'Digit2') {
+            game.loadChart('assets/charts/rock-groove-easy.json').catch(console.error);
+        }
     });
+}
+
+function setupChartSelector(game) {
+    const btnSelectSong = document.getElementById('btnSelectSong');
+    const modalOverlay = document.getElementById('modalOverlay');
+    const btnCloseModal = document.getElementById('btnCloseModal');
+    const songList = document.getElementById('songList');
+
+    // Abrir modal de seleção
+    btnSelectSong?.addEventListener('click', () => {
+        populateSongList(game);
+        modalOverlay.style.display = 'flex';
+    });
+
+    // Fechar modal
+    btnCloseModal?.addEventListener('click', () => {
+        modalOverlay.style.display = 'none';
+    });
+
+    // Fechar modal clicando fora
+    modalOverlay?.addEventListener('click', (e) => {
+        if (e.target === modalOverlay) {
+            modalOverlay.style.display = 'none';
+        }
+    });
+}
+
+function populateSongList(game) {
+    const songList = document.getElementById('songList');
+    const availableCharts = game.getAvailableCharts();
     
+    songList.innerHTML = '';
+    
+    availableCharts.forEach(chartPath => {
+        const songItem = document.createElement('div');
+        songItem.className = 'song-item';
+        songItem.dataset.chart = chartPath;
+        
+        // Extrair nome do arquivo para exibição
+        const fileName = chartPath.split('/').pop().replace('.json', '');
+        const displayName = fileName.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        
+        songItem.innerHTML = `
+            <div class="song-item-info">
+                <h3 class="song-title">${displayName}</h3>
+                <p class="song-meta">Chart • Unknown BPM</p>
+            </div>
+            <div class="song-item-duration">--:--</div>
+        `;
+        
+        songItem.addEventListener('click', async () => {
+            try {
+                await game.loadChart(chartPath);
+                document.getElementById('modalOverlay').style.display = 'none';
+                console.log(`Chart loaded: ${displayName}`);
+            } catch (error) {
+                console.error('Failed to load chart:', error);
+                alert('Erro ao carregar chart: ' + error.message);
+            }
+        });
+        
+        songList.appendChild(songItem);
+    });
 }
 
 // class App {
@@ -121,9 +191,7 @@ async function initApp() {
     game.start();
 
     setupKeyboardControls(game, eventBus);
-
-
-    
+    setupChartSelector(game);
 }
 
 initApp();
