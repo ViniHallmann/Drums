@@ -106,7 +106,9 @@ export default class Game {
     render() {
         this.renderer.clear();
         this.noteHighway.render(this.renderer);
-        this.metronome.drawVisual(this.renderer, this.config.visual.HIT_LINE_X);
+        if (this.isPlaying) {
+            this.metronome.drawVisual(this.renderer, this.config.visual.HIT_LINE_X);
+        }
     }
 
     startMusic() {
