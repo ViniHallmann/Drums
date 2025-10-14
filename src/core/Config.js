@@ -7,8 +7,8 @@ function getMIDIAccess() {
 const VisualConfig = {
     CANVAS_WIDTH: 1280,
     CANVAS_HEIGHT: 720,
-    NOTE_HEIGHT: 20,
-    NOTE_WIDTH: 100,
+    NOTE_HEIGHT: 50,
+    NOTE_WIDTH: 60,
     HIT_LINE_X: 150,
     KICK_COLOR: '#FF0000',
     SNARE_COLOR: '#00FF00',
@@ -23,6 +23,7 @@ const VisualConfig = {
     HIT_EFFECT_COLOR: '#FFD700',
     MISS_EFFECT_COLOR: '#FF4500',
     FPS: 60,
+    NUM_LANES: 6,
 };
 
 const GameplayConfig = {
@@ -44,7 +45,13 @@ const AudioConfig = {
     masterVolume: 0.8,
     musicVolume: 0.7,
     sfxVolume: 0.9,
-    audioLatency: 0.1, // seconds
+    audioLatency: 0.1,
+    samplePaths: {
+        kick: 'assets/audio/drum-samples/kick.wav',
+        snare: 'assets/audio/drum-samples/snare.wav',
+        hiHatClosed: 'assets/audio/drum-samples/hihat-closed.wav',
+        hiHatOpen: 'assets/audio/drum-samples/hihat-open.wav',
+    },
 };
 
 const drumMap = {
@@ -58,6 +65,7 @@ const drumMap = {
         45: 'Tom 2 (Mid Tom)',
         41: 'Tom 3 (Floor Tom)',
     };
+
 const InputConfig = {
     midiMapping: {
         36: {

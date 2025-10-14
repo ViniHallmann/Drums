@@ -4,6 +4,7 @@ import HitDetector from '../gameplay/HitDetector.js';
 import Logger from '../utils/Logger.js';
 import GameClock from './GameClock.js';
 import Metronome from './Metronome.js';
+import AudioEngine from '../audio/AudioEngine.js';
 
 // Game.js (orquestrador principal)
 //   ├─ init()
@@ -34,6 +35,8 @@ export default class Game {
         this.noteHighway = new NoteHighway(this.renderer, this.config);
         this.hitDetector = new HitDetector(this.eventBus, this.config.gameplay);
         this.metronome   = new Metronome(this.config);
+        
+        this.audioEngine = new AudioEngine(this.config.audio);
         
 
         // Componentes do jogo (a serem implementados)
@@ -81,17 +84,15 @@ export default class Game {
         console.log('Mock chart loaded');
     }
 
-    init() {
+    async init() {
         // Inicializar componentes do jogo
         // this.timeSync.init();
-        
-        // this.audioEngine.init();
 
         
         this.noteHighway.init();
-        
         this.hitDetector.init();
         this._loadMockChart();
+        await this.audioEngine.init();
     }
     
     start() {
@@ -153,13 +154,4 @@ export default class Game {
         this._loadMockChart();
     }
 
-    pauseMusic() {
-        this.isPlaying = false;
-        //Logger.info('Music paused');
-    }
-
-    resumeMusic() {
-        this.isPlaying = true;
-        //Logger.info('Music resumed');
-    }
 }

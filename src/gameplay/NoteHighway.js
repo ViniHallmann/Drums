@@ -5,7 +5,7 @@ export default class NoteHighway {
         this.renderer = renderer;
         this.config = config;
         
-        this.numLanes = 9;
+        this.numLanes = this.config.visual.NUM_LANES || 6;
         this.laneHeight = renderer.height / this.numLanes;
         this.hitLineX = this.config.visual.HIT_LINE_X;
         this.labelAreaWidth = 150;

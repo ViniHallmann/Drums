@@ -1,0 +1,16 @@
+{
+  "metadata": {
+    "title": "Basic Rock Groove",
+    "artist": "Exercise",
+    "bpm": 120,
+    "duration": 32,
+    "difficulty": "intermediate"
+  },
+  "audio": {
+    "backingTrack": null
+  },
+  "notes": [
+    { "time": 0.5, "lane": 0, "midiNote": 36, "velocity": 100 },
+    { "time": 1.0, "lane": 2, "midiNote": 42, "velocity": 70 }
+  ]
+}

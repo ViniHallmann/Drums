@@ -18,7 +18,7 @@ import Logger from './utils/Logger.js';
 
 const midiStatus = document.getElementById('midiStatus');
 
-function configureEventBus(eventBus, hitDetector) {
+function configureEventBus(eventBus, hitDetector, audioEngine) {
     eventBus.on('midi:connected', () => {
         console.log('Evento: MIDI conectado');
         midiStatus.classList.add('connected');
@@ -44,7 +44,8 @@ function configureEventBus(eventBus, hitDetector) {
 
     eventBus.on('note:hit', (data) => {
         console.log(`Evento: Nota acertada! Time diff: ${data.timeDiff.toFixed(3)}s`, data.note);
-        console.log(data.accuracy);
+        const instrumentName = data.note.config.input.midiMapping[data.note.midiNote].name;
+        audioEngine.playSample(instrumentName, data.note.velocity);
     });
 
     eventBus.on('note:miss', (data) => {
@@ -57,6 +58,7 @@ function configureEventBus(eventBus, hitDetector) {
 function setupKeyboardControls(game, eventBus) {
     document.addEventListener('keydown', (e) => {
         if (e.code === 'Space') {
+            game.audioEngine.resume();
             if (game.clock.isRunning) {
                 game.pauseMusic();
             } else {
@@ -76,6 +78,9 @@ function setupKeyboardControls(game, eventBus) {
         }
         if (e.code === 'KeyS') {
             eventBus.emit('midi:hit', { note: 38, name: 'SNARE', lane: 1, velocity: 100 });
+        }
+        if (e.code === 'KeyH') {
+            eventBus.emit('midi:hit', { note: 42, name: 'HIHAT CLOSED', lane: 2, velocity: 100 });
         }
     });
     
@@ -111,8 +116,8 @@ async function initApp() {
 
     const isConnected = await midiManager.init();
 
-    game.init();
-    configureEventBus(eventBus, game.hitDetector);
+    await game.init();
+    configureEventBus(eventBus, game.hitDetector, game.audioEngine);
     game.start();
 
     setupKeyboardControls(game, eventBus);

@@ -1,0 +1,158 @@
+{
+  "metadata": {
+    "title": "01-basic-rock-beat",
+    "artist": null,
+    "bpm": 105,
+    "duration": 2.29,
+    "difficulty": null
+  },
+  "audio": {
+    "backingTrack": null
+  },
+  "notes": [
+    {
+      "time": 0,
+      "lane": 0,
+      "midiNote": 36,
+      "velocity": 127
+    },
+    {
+      "time": 0,
+      "lane": 2,
+      "midiNote": 42,
+      "velocity": 89
+    },
+    {
+      "time": 32,
+      "lane": 2,
+      "midiNote": 42,
+      "velocity": 89
+    },
+    {
+      "time": 64,
+      "lane": 1,
+      "midiNote": 38,
+      "velocity": 127
+    },
+    {
+      "time": 64,
+      "lane": 2,
+      "midiNote": 42,
+      "velocity": 89
+    },
+    {
+      "time": 96,
+      "lane": 2,
+      "midiNote": 42,
+      "velocity": 89
+    },
+    {
+      "time": 128,
+      "lane": 0,
+      "midiNote": 36,
+      "velocity": 127
+    },
+    {
+      "time": 128,
+      "lane": 2,
+      "midiNote": 42,
+      "velocity": 89
+    },
+    {
+      "time": 160,
+      "lane": 2,
+      "midiNote": 42,
+      "velocity": 89
+    },
+    {
+      "time": 192,
+      "lane": 1,
+      "midiNote": 38,
+      "velocity": 127
+    },
+    {
+      "time": 192,
+      "lane": 2,
+      "midiNote": 42,
+      "velocity": 89
+    },
+    {
+      "time": 224,
+      "lane": 2,
+      "midiNote": 42,
+      "velocity": 89
+    },
+    {
+      "time": 256,
+      "lane": 0,
+      "midiNote": 36,
+      "velocity": 127
+    },
+    {
+      "time": 256,
+      "lane": 2,
+      "midiNote": 42,
+      "velocity": 89
+    },
+    {
+      "time": 288,
+      "lane": 2,
+      "midiNote": 42,
+      "velocity": 89
+    },
+    {
+      "time": 320,
+      "lane": 1,
+      "midiNote": 38,
+      "velocity": 127
+    },
+    {
+      "time": 320,
+      "lane": 2,
+      "midiNote": 42,
+      "velocity": 89
+    },
+    {
+      "time": 352,
+      "lane": 2,
+      "midiNote": 42,
+      "velocity": 89
+    },
+    {
+      "time": 384,
+      "lane": 0,
+      "midiNote": 36,
+      "velocity": 127
+    },
+    {
+      "time": 384,
+      "lane": 2,
+      "midiNote": 42,
+      "velocity": 89
+    },
+    {
+      "time": 416,
+      "lane": 2,
+      "midiNote": 42,
+      "velocity": 89
+    },
+    {
+      "time": 448,
+      "lane": 1,
+      "midiNote": 38,
+      "velocity": 127
+    },
+    {
+      "time": 448,
+      "lane": 2,
+      "midiNote": 42,
+      "velocity": 89
+    },
+    {
+      "time": 480,
+      "lane": 2,
+      "midiNote": 42,
+      "velocity": 89
+    }
+  ]
+}
