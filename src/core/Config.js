@@ -1,4 +1,5 @@
 import Logger from '../utils/Logger.js';
+import Metronome from './Metronome.js';
 
 function getMIDIAccess() {
     return navigator.requestMIDIAccess().then(onMIDISuccess, onMIDIFailure);
@@ -162,20 +163,23 @@ const UIConfig = {
     comboFont: '18px Arial',
     comboColor: '#FFD700',
     showHitEffects: true,
-    hitEffectDuration: 0.3, // seconds
-    scoreHUDPosition: [10, 30], // x, y
-    comboHUDPosition: [10, 60], // x, y
-    percentageHUDPosition: [10, 90], // x, y
-    fpsHUDPosition: [700, 30], // x, y 
+    hitEffectDuration: 0.3,
+    scoreHUDPosition: [10, 30], 
+    comboHUDPosition: [10, 60], 
+    percentageHUDPosition: [10, 90], 
+    fpsHUDPosition: [700, 30], 
 };
 
-//const DEBUG = import.meta.env.DEV || false;
-
-export const DebugConfig = {
-  showFPS: true,
-  showHitboxes: true,
-  logMIDI: true,
-  godMode: true,
+const MetronomeConfig = {
+    showMetronome: true,
+    beatSpacing: 25,
+    beatRadius: 9,
+    inactiveColor: '#2a2a2a',
+    inactiveBorder: '#3a3a3a',
+    activeColor: '#48bc22',
+    downbeatColor: '#b53030',
+    textColor: '#9a9a9a',
+    activeTextColor: '#e8e8e8',
 };
 
 const Config = {
@@ -186,6 +190,7 @@ const Config = {
     timing: TimingConfig,
     ui: UIConfig,
     drumMap: drumMap,
+    metronome: MetronomeConfig,
 };
 
 const DIFFICULTY_PROFILES = {

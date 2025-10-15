@@ -98,10 +98,10 @@ export default class NoteHighway {
     
         for (const [midiNote, drumInfo] of Object.entries(this.config.input.midiMapping)) {
             lanes.push({
-                lane: drumInfo.lane,
-                name: drumInfo.name.toUpperCase(),
+                lane:  drumInfo.lane,
+                name:  drumInfo.name.toUpperCase(),
                 color: drumInfo.color,
-                y: drumInfo.lane * this.laneHeight,
+                y:     drumInfo.lane * this.laneHeight,
                 midiNote: parseInt(midiNote)
             });
         }
@@ -115,89 +115,30 @@ export default class NoteHighway {
         for (let i = 0; i < this.numLanes; i++) {
             const y = i * this.laneHeight;
             const color = i % 2 === 0 ? '#0f0f0f' : '#0a0a0a';
-
-            renderer.drawRect(
-                0, 
-                y, 
-                renderer.width, 
-                this.laneHeight, 
-                color
-            );
+            renderer.drawRect(0, y, renderer.width, this.laneHeight, color);
         }
     }
 
     _drawLabelArea(renderer) {
-        renderer.drawRect(
-            0, 
-            0, 
-            this.labelAreaWidth, 
-            renderer.height, 
-            '#1a1a1a',
-            { alpha: 0.95 }
-        );
-
-        renderer.drawLine(
-            this.labelAreaWidth,
-            0,
-            this.labelAreaWidth,
-            renderer.height,
-            '#2a2a2a',
-            1,
-            0.5
-        );
+        renderer.drawRect(0, 0, this.labelAreaWidth, renderer.height, '#1a1a1a', { alpha: 0.95 });
+        renderer.drawLine(this.labelAreaWidth, 0, this.labelAreaWidth, renderer.height, '#2a2a2a', 1, 0.5);
     }
 
     _drawLaneLabels(renderer) {
         for (const lane of this.lanes) {
             const centerY = lane.y + (this.laneHeight / 2);
-
-            renderer.drawCircle(
-                25,
-                centerY,
-                6,
-                lane.color,
-                { alpha: 0.8 }
-            );
-            
-
-            renderer.drawText(
-                lane.name, 
-                45,  
-                centerY, 
-                { 
-                    font: '12px sans-serif', 
-                    color: '#9a9a9a', 
-                    align: 'left',
-                    baseline: 'middle'
-                }
-            );
+            renderer.drawCircle(25, centerY, 6, lane.color, { alpha: 0.8 });
+            renderer.drawText(lane.name, 45, centerY, { font: '12px sans-serif', color: '#9a9a9a', align: 'left', baseline: 'middle'});
         }
     }
 
     _drawHitLine(renderer) {
-
-        renderer.drawLine(
-            this.hitLineX, 
-            0, 
-            this.hitLineX, 
-            renderer.height, 
-            '#cfcf25', 
-            3, 
-            0.5
-        );
+        renderer.drawLine(this.hitLineX, 0, this.hitLineX, renderer.height, '#cfcf25', 3, 0.5);
     }
 
     _drawBeatGrid(renderer){
         for (let x = this.hitLineX; x < renderer.width; x += 100) {
-            renderer.drawLine(
-                x, 
-                0, 
-                x, 
-                renderer.height, 
-                '#555', 
-                1, 
-                0.3
-            );
+            renderer.drawLine(x, 0, x, renderer.height, '#555', 1, 0.3);
         }
 
     }

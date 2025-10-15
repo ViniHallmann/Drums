@@ -36,6 +36,7 @@ function configureEventBus(eventBus, hitDetector, audioEngine) {
         console.log(`Evento: Nota acertada! Time diff: ${data.timeDiff.toFixed(3)}s`, data.note);
         const instrumentName = data.note.config.input.midiMapping[data.note.midiNote].name;
         audioEngine.playSample(instrumentName, data.note.velocity);
+        console.log(data.accuracy)
     });
 
     eventBus.on('note:miss', (data) => {

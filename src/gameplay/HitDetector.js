@@ -13,12 +13,19 @@ export default class HitDetector {
     }
 
     _calculateAccuracy(timeDiff) {
-        const perfect = this.hitWindow * 0.3;
-        const good    = this.hitWindow * 0.7;
+        const absTimeDiff = Math.abs(timeDiff);
+        const perfect = 0.05
+        const good    = 0.10
+        const early  = 0.15
+        const late   = 0.25
+        //const ok = Math.max(this.earlyHitWindow, this.lateHitWindow);
         
-        if (timeDiff <= perfect) return 'PERFECT';
-        if (timeDiff <= good) return 'GOOD';
-        return 'OK';
+        if (absTimeDiff <= perfect) return 'PERFECT';
+        if (absTimeDiff <= good) return 'GOOD';
+        if (absTimeDiff <= early) return 'EARLY';
+        if (absTimeDiff <= late) return 'LATE';
+        //if (absTimeDiff <= ok) return 'OK';
+        else return 'MISS';
     }
 
     init() {
@@ -29,12 +36,12 @@ export default class HitDetector {
         this.currentTime = currentTime;
         this.activeNotes = activeNotes;
 
-        for (const note of this.activeNotes) {
-            if (this.currentTime > note.time + this.lateHitWindow && !note.wasHit && !note.wasMissed) {
-                //2note.markAsMiss(); // Marca para não verificar de novo.
-                this.eventBus.emit('note:miss', { note: note });
-            }
-        }
+        // for (const note of this.activeNotes) {
+        //     if (this.currentTime > note.time + this.lateHitWindow && !note.wasHit && !note.wasMissed) {
+        //         //2note.markAsMiss(); // Marca para não verificar de novo.
+        //         //this.eventBus.emit('note:miss', { note: note });
+        //     }
+        // }
     }
 
     checkHit(midiNote) {
