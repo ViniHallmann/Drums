@@ -36,7 +36,7 @@ export default class NoteHighway {
     }
 
     _spawnNotes() {
-        const lookAheadTime = this.config.gameplay.lookAheadTime || 4;
+        const lookAheadTime = this.config.gameplay.lookAheadTime || 2;
         
         while (this.currentNoteIndex < this.allNotes.length) {
             const note = this.allNotes[this.currentNoteIndex];
@@ -59,7 +59,7 @@ export default class NoteHighway {
     }
 
     init() {
-        console.log();
+
         //Logger.info('NoteHighway initialized with config:', this.config);
     }
 
@@ -73,7 +73,7 @@ export default class NoteHighway {
             note.update(currentTime, this.scrollSpeed);
         }
         
-        //this._cullNotes();
+        this._cullNotes();
     }
 
     //POR ENQUANTO NAO FAZ O BUILD BASEADO NA DIFICULDADE
@@ -165,8 +165,8 @@ export default class NoteHighway {
             0, 
             this.hitLineX, 
             this.renderer.height, 
-            '#FFF', 
-            2, 
+            '#cfcf25', 
+            3, 
             0.5
         );
     }
@@ -196,7 +196,7 @@ export default class NoteHighway {
 
         this._drawLaneLabels();
 
-        this._drawHitLine();
+       this._drawHitLine();
 
         this._drawBeatGrid();
 

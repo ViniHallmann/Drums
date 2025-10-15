@@ -1,13 +1,3 @@
-// Integração com main.js:
-// O main.js deve:
-
-// Criar instância do EventBus
-// Criar instância do MIDIManager passando EventBus e Config.drumMap
-// Chamar await midiManager.init()
-// Atualizar UI com status de conexão
-// Passar eventBus para o Game.js quando iniciar
-
-
 import EventBus from './core/eventBus.js';
 import MIDIManager from './midi/MIDIManager.js';
 import Config from './core/Config.js';
@@ -83,12 +73,6 @@ function setupKeyboardControls(game, eventBus) {
             eventBus.emit('midi:hit', { note: 42, name: 'HIHAT CLOSED', lane: 2, velocity: 100 });
         }
         
-        if (e.code === 'Digit1') {
-            game.loadChart('assets/charts/01-basic-rock-beat.json').catch(console.error);
-        }
-        if (e.code === 'Digit2') {
-            game.loadChart('assets/charts/rock-groove-easy.json').catch(console.error);
-        }
     });
 }
 

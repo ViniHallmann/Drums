@@ -1,10 +1,10 @@
 {
   "metadata": {
-    "title": "01-basic-rock-beat",
+    "title": "01-simple-rock-beat",
     "artist": null,
     "bpm": 105,
     "duration": 2.29,
-    "difficulty": null
+    "difficulty": "easy"
   },
   "audio": {
     "backingTrack": null
@@ -23,33 +23,15 @@
       "velocity": 89
     },
     {
-      "time": 32,
-      "lane": 2,
-      "midiNote": 42,
-      "velocity": 89
-    },
-    {
       "time": 64,
-      "lane": 1,
-      "midiNote": 38,
-      "velocity": 127
-    },
-    {
-      "time": 64,
-      "lane": 2,
-      "midiNote": 42,
-      "velocity": 89
-    },
-    {
-      "time": 96,
       "lane": 2,
       "midiNote": 42,
       "velocity": 89
     },
     {
       "time": 128,
-      "lane": 0,
-      "midiNote": 36,
+      "lane": 1,
+      "midiNote": 38,
       "velocity": 127
     },
     {
@@ -59,25 +41,7 @@
       "velocity": 89
     },
     {
-      "time": 160,
-      "lane": 2,
-      "midiNote": 42,
-      "velocity": 89
-    },
-    {
       "time": 192,
-      "lane": 1,
-      "midiNote": 38,
-      "velocity": 127
-    },
-    {
-      "time": 192,
-      "lane": 2,
-      "midiNote": 42,
-      "velocity": 89
-    },
-    {
-      "time": 224,
       "lane": 2,
       "midiNote": 42,
       "velocity": 89
@@ -95,61 +59,97 @@
       "velocity": 89
     },
     {
-      "time": 288,
-      "lane": 2,
-      "midiNote": 42,
-      "velocity": 89
-    },
-    {
       "time": 320,
-      "lane": 1,
-      "midiNote": 38,
-      "velocity": 127
-    },
-    {
-      "time": 320,
-      "lane": 2,
-      "midiNote": 42,
-      "velocity": 89
-    },
-    {
-      "time": 352,
       "lane": 2,
       "midiNote": 42,
       "velocity": 89
     },
     {
       "time": 384,
+      "lane": 1,
+      "midiNote": 38,
+      "velocity": 127
+    },
+    {
+      "time": 384,
+      "lane": 2,
+      "midiNote": 42,
+      "velocity": 89
+    },
+    {
+      "time": 448,
+      "lane": 2,
+      "midiNote": 42,
+      "velocity": 89
+    },
+    {
+      "time": 512,
       "lane": 0,
       "midiNote": 36,
       "velocity": 127
     },
     {
-      "time": 384,
+      "time": 512,
       "lane": 2,
       "midiNote": 42,
       "velocity": 89
     },
     {
-      "time": 416,
+      "time": 576,
       "lane": 2,
       "midiNote": 42,
       "velocity": 89
     },
     {
-      "time": 448,
+      "time": 640,
       "lane": 1,
       "midiNote": 38,
       "velocity": 127
     },
     {
-      "time": 448,
+      "time": 640,
       "lane": 2,
       "midiNote": 42,
       "velocity": 89
     },
     {
-      "time": 480,
+      "time": 704,
+      "lane": 2,
+      "midiNote": 42,
+      "velocity": 89
+    },
+    {
+      "time": 768,
+      "lane": 0,
+      "midiNote": 36,
+      "velocity": 127
+    },
+    {
+      "time": 768,
+      "lane": 2,
+      "midiNote": 42,
+      "velocity": 89
+    },
+    {
+      "time": 832,
+      "lane": 2,
+      "midiNote": 42,
+      "velocity": 89
+    },
+    {
+      "time": 896,
+      "lane": 1,
+      "midiNote": 38,
+      "velocity": 127
+    },
+    {
+      "time": 896,
+      "lane": 2,
+      "midiNote": 42,
+      "velocity": 89
+    },
+    {
+      "time": 960,
       "lane": 2,
       "midiNote": 42,
       "velocity": 89

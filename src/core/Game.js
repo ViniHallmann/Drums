@@ -5,6 +5,7 @@ import GameClock from './GameClock.js';
 import Metronome from './Metronome.js';
 import AudioEngine from '../audio/AudioEngine.js';
 import ChartLoader from '../chart/ChartLoader.js';
+import MetronomeVisual from '../ui/MetronomeVisual.js';
 
 export default class Game {
     constructor(eventBus, renderer, midiManager, config) {
@@ -20,7 +21,8 @@ export default class Game {
         this.clock       = new GameClock();
         this.noteHighway = new NoteHighway(this.renderer, this.config);
         this.hitDetector = new HitDetector(this.eventBus, this.config.gameplay);
-        this.metronome   = new Metronome(this.config);
+        this.metronome = new Metronome(this.config);
+        this.metronomeVisual = new MetronomeVisual(this.metronome, this.config); 
         
         this.audioEngine = new AudioEngine(this.config.audio);
         this.chartLoader = new ChartLoader(this.config);
@@ -107,15 +109,13 @@ export default class Game {
         this.renderer.clear();
         this.noteHighway.render(this.renderer);
         if (this.isPlaying) {
-            this.metronome.drawVisual(this.renderer, this.config.visual.HIT_LINE_X);
+            this.metronomeVisual.render(this.renderer);
         }
     }
 
     startMusic() {
-        this.clock.setOffset(-this.config.gameplay.CHART_START_DELAY);
-        this.clock.start();
+        this.restartChart();
         this.isPlaying = true;
-        this.resetChart();
     }
 
     pauseMusic() {
@@ -140,11 +140,19 @@ export default class Game {
         const chartDuration = this.currentChart.metadata.duration || this.getChartDuration();
         const currentTime = this.clock.getCurrentTime();
         
-        if (currentTime >= chartDuration) {
-            this.resetChart();
-            this.clock.reset();
-            this.clock.start();
+        if (currentTime >= chartDuration && !this.isLooping) {
+            this.isLooping = true;
+            this.restartChart();
         }
+    }
+
+    restartChart() {
+        this.resetChart();
+        this.clock.reset();
+        this.clock.setOffset(-this.config.gameplay.CHART_START_DELAY);
+        this.clock.start();
+
+        this.metronome.reset();
     }
 
     resetChart() {

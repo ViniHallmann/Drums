@@ -151,7 +151,7 @@ const InputConfig = {
 };
 
 const TimingConfig = {
-    bpm: 120,
+    bpm: 105,
     beatDivision: 4, // quarter notes
     latencyCompensation: 0.05, // seconds
 };
@@ -191,7 +191,7 @@ const Config = {
 const DIFFICULTY_PROFILES = {
     easy: {
         scrollSpeed: 200,
-        hitWindow: 0.2,
+        hitWindow: 0.5,
         activeLanes: ['kick', 'snare', 'hiHatClosed'],
     },
     medium: {

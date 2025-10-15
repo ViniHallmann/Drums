@@ -11,6 +11,24 @@
   },
   "notes": [
     { "time": 0.5, "lane": 0, "midiNote": 36, "velocity": 100 },
-    { "time": 1.0, "lane": 2, "midiNote": 42, "velocity": 70 }
+    { "time": 1.0, "lane": 2, "midiNote": 42, "velocity": 70 },
+    { "time": 1.5, "lane": 2, "midiNote": 42, "velocity": 70 },
+    { "time": 2.0, "lane": 1, "midiNote": 38, "velocity": 100 },
+    { "time": 2.0, "lane": 2, "midiNote": 42, "velocity": 70 },
+    { "time": 2.5, "lane": 2, "midiNote": 42, "velocity": 70 },
+    { "time": 3.0, "lane": 0, "midiNote": 36, "velocity": 100 },
+    { "time": 3.0, "lane": 2, "midiNote": 42, "velocity": 70 },
+    { "time": 3.5, "lane": 2, "midiNote": 42, "velocity": 70 },
+    { "time": 4.0, "lane": 1, "midiNote": 38, "velocity": 100 },
+    { "time": 4.0, "lane": 2, "midiNote": 42, "velocity": 70 },
+    { "time": 4.5, "lane": 2, "midiNote": 42, "velocity": 70 },
+    { "time": 5.0, "lane": 0, "midiNote": 36, "velocity": 100 },
+    { "time": 5.0, "lane": 2, "midiNote": 42, "velocity": 70 },
+    { "time": 5.5, "lane": 2, "midiNote": 42, "velocity": 70 },
+    { "time": 6.0, "lane": 1, "midiNote": 38, "velocity": 100 },
+    { "time": 6.0, "lane": 2, "midiNote": 42, "velocity": 70 },
+    { "time": 6.5, "lane": 2, "midiNote": 42, "velocity": 70 },
+    { "time": 7.0, "lane": 0, "midiNote": 36, "velocity": 100 },
+    { "time": 7.0, "lane": 2, "midiNote": 42, "velocity": 70 }
   ]
 }
