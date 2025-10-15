@@ -1,5 +1,6 @@
 import { Note } from './Note.js';
 import Logger from '../utils/Logger.js';
+import Renderer from '../rendering/Renderer.js';
 export default class NoteHighway {
     constructor(renderer, config) {
         this.renderer = renderer;
@@ -18,6 +19,21 @@ export default class NoteHighway {
 
         this.currentTime = 0;
         this.scrollSpeed = this.config.gameplay.scrollSpeed; 
+        this.staticLayerCanvas = document.createElement('canvas');
+        this.staticLayerCanvas.width = this.renderer.width;
+        this.staticLayerCanvas.height = this.renderer.height;
+        this._preRenderStaticLayers();
+    }
+
+    _preRenderStaticLayers() {
+        const tempRenderer = new Renderer('gameCanvas', this.config.visual); 
+        tempRenderer.ctx = this.staticLayerCanvas.getContext('2d');
+        tempRenderer.clear();
+        this._drawLaneBackgrounds(tempRenderer);
+        this._drawLabelArea(tempRenderer);
+        this._drawLaneLabels(tempRenderer);
+        this._drawHitLine(tempRenderer);
+        this._drawBeatGrid(tempRenderer);
     }
 
     loadChart(notes) {
@@ -73,7 +89,7 @@ export default class NoteHighway {
             note.update(currentTime, this.scrollSpeed);
         }
         
-        this._cullNotes();
+        //this._cullNotes();
     }
 
     //POR ENQUANTO NAO FAZ O BUILD BASEADO NA DIFICULDADE
@@ -95,47 +111,47 @@ export default class NoteHighway {
         return lanes;
     }
 
-    _drawLaneBackgrounds() {
+    _drawLaneBackgrounds(renderer) {
         for (let i = 0; i < this.numLanes; i++) {
             const y = i * this.laneHeight;
             const color = i % 2 === 0 ? '#0f0f0f' : '#0a0a0a';
-            
-            this.renderer.drawRect(
+
+            renderer.drawRect(
                 0, 
                 y, 
-                this.renderer.width, 
+                renderer.width, 
                 this.laneHeight, 
                 color
             );
         }
     }
 
-    _drawLabelArea() {
-        this.renderer.drawRect(
+    _drawLabelArea(renderer) {
+        renderer.drawRect(
             0, 
             0, 
             this.labelAreaWidth, 
-            this.renderer.height, 
+            renderer.height, 
             '#1a1a1a',
             { alpha: 0.95 }
         );
-        
-        this.renderer.drawLine(
+
+        renderer.drawLine(
             this.labelAreaWidth,
             0,
             this.labelAreaWidth,
-            this.renderer.height,
+            renderer.height,
             '#2a2a2a',
             1,
             0.5
         );
     }
 
-    _drawLaneLabels() {
+    _drawLaneLabels(renderer) {
         for (const lane of this.lanes) {
             const centerY = lane.y + (this.laneHeight / 2);
-            
-            this.renderer.drawCircle(
+
+            renderer.drawCircle(
                 25,
                 centerY,
                 6,
@@ -144,7 +160,7 @@ export default class NoteHighway {
             );
             
 
-            this.renderer.drawText(
+            renderer.drawText(
                 lane.name, 
                 45,  
                 centerY, 
@@ -158,26 +174,26 @@ export default class NoteHighway {
         }
     }
 
-    _drawHitLine() {
-        
-        this.renderer.drawLine(
+    _drawHitLine(renderer) {
+
+        renderer.drawLine(
             this.hitLineX, 
             0, 
             this.hitLineX, 
-            this.renderer.height, 
+            renderer.height, 
             '#cfcf25', 
             3, 
             0.5
         );
     }
 
-    _drawBeatGrid(){
-        for (let x = this.hitLineX; x < this.renderer.width; x += 100) {
-            this.renderer.drawLine(
+    _drawBeatGrid(renderer){
+        for (let x = this.hitLineX; x < renderer.width; x += 100) {
+            renderer.drawLine(
                 x, 
                 0, 
                 x, 
-                this.renderer.height, 
+                renderer.height, 
                 '#555', 
                 1, 
                 0.3
@@ -190,15 +206,7 @@ export default class NoteHighway {
         const ctx = this.renderer.getContext();
         ctx.save();
 
-        this._drawLaneBackgrounds();
-
-        this._drawLabelArea();
-
-        this._drawLaneLabels();
-
-       this._drawHitLine();
-
-        this._drawBeatGrid();
+        ctx.drawImage(this.staticLayerCanvas, 0, 0);
 
         for (const note of this.activeNotes) {
             note.render(this.renderer);
