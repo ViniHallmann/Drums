@@ -94,15 +94,14 @@ export default class Game {
     }
 
     update(deltaTime) {
-
-        if (!this.isPlaying) { return; }
-
         const currentTime = this.clock.getCurrentTime();
-        this.checkChartLoop();
-
-        this.metronome.update(currentTime);
-        this.noteHighway.update(deltaTime, currentTime);
-        this.hitDetector.update(deltaTime, currentTime, this.noteHighway.activeNotes);
+    
+        if (this.isPlaying) {
+            this.checkChartLoop();
+            this.metronome.update(currentTime);
+            this.noteHighway.update(deltaTime, currentTime);
+            this.hitDetector.update(deltaTime, currentTime, this.noteHighway.activeNotes);
+        }
     }
 
     render() {
