@@ -140,7 +140,6 @@ export default class NoteHighway {
         for (let x = this.hitLineX; x < renderer.width; x += 100) {
             renderer.drawLine(x, 0, x, renderer.height, '#555', 1, 0.3);
         }
-
     }
 
     render() {

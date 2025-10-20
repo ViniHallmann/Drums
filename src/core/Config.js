@@ -10,7 +10,7 @@ const VisualConfig = {
     CANVAS_HEIGHT: 720,
     NOTE_HEIGHT: 45,
     NOTE_WIDTH: 45,
-    HIT_LINE_X: 250,
+    HIT_LINE_X: 550,
     KICK_COLOR: '#FF0000',
     SNARE_COLOR: '#00FF00',
     HI_HAT_COLOR: '#0000FF',
@@ -24,7 +24,7 @@ const VisualConfig = {
     HIT_EFFECT_COLOR: '#FFD700',
     MISS_EFFECT_COLOR: '#FF4500',
     FPS: 60,
-    NUM_LANES: 6,
+    NUM_LANES: 9,
 };
 
 const GameplayConfig = {
