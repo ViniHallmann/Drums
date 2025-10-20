@@ -1,20 +1,3 @@
-// // Identificação
-// - time: number         // Quando deve ser acertada (segundos)
-// - lane: number         // Qual lane (0-8)
-// - midiNote: number     // Nota MIDI original (ex: 36 = kick)
-
-// // Visual
-// - x: number            // Posição horizontal (calculada)
-// - y: number            // Posição vertical (fixa, baseada na lane)
-// - width: number        // Largura da nota
-// - height: number       // Altura da nota
-// - color: string        // Cor (do instrumento)
-
-// // Estado
-// - isActive: boolean    // Ainda não foi acertada nem passou
-// - wasHit: boolean      // Foi acertada pelo jogador
-// - velocity: number     // Força do hit (0-127)
-
 import Logger from '../utils/Logger.js';
 export class Note {
     constructor(renderer, noteData, config, laneHeight) {
@@ -36,8 +19,9 @@ export class Note {
         this.feedbackAlpha = 1;
 
         
-        this.x = 0;
+        this.x = noteData.time * config.gameplay.scrollSpeed;
         this.y = noteData.lane * laneHeight + (laneHeight - this.height) / 2;
+        
 
         this.isActive = true;
         this.wasHit = false;
@@ -49,44 +33,32 @@ export class Note {
 
     update(currentTime, scrollSpeed) {
 
-        if (this.timingFeedback) {
-            this.feedbackElapsed += 0.016; 
-            const progress = this.feedbackElapsed / this.feedbackDuration;
+        // if (this.timingFeedback) {
+        //     this.feedbackElapsed += 0.016; 
+        //     const progress = this.feedbackElapsed / this.feedbackDuration;
             
-            const direction = this.timingFeedback === 'early' ? -1 : 1;
-            this.x += direction * 100 * 0.016;
-            this.feedbackAlpha = 1 - progress;
+        //     const direction = this.timingFeedback === 'early' ? -1 : 1;
+        //     this.x += direction * 100 * 0.016;
+        //     this.feedbackAlpha = 1 - progress;
             
-            if (progress >= 1) this.isActive = false;
-            return;
-        }
-        const timeToHit = this.time - currentTime;
-        const distanceToHit = timeToHit * scrollSpeed;
-        this.x = this.config.visual.HIT_LINE_X + distanceToHit;
+        //     if (progress >= 1) this.isActive = false;
+        //     return;
+        // }
+        // const timeToHit = this.time - currentTime;
+        // const distanceToHit = timeToHit * scrollSpeed;
+        // this.x = this.config.visual.HIT_LINE_X + distanceToHit;
 
-        if (this.x + this.width < 0) {
-            this.isActive = false;
-        }
+        // if (this.x + this.width < 0) {
+        //     this.isActive = false;
+        // }
     }
 
     render() {
         if (!this.isActive) return;
 
         const alpha = (this.timingFeedback ? this.feedbackAlpha : 1) * (0.7 + (this.velocity / 127) * 0.3);
-        //const alpha = 0.7 + (this.velocity / 127) * 0.3;
 
-        this.renderer.drawRect(
-            this.x,
-            this.y,
-            this.width,
-            this.height,
-            this.color,
-            {
-                fill: true,
-                alpha: alpha,
-                borderRadius: 4
-            }
-        );
+        this.renderer.drawRect(this.x - this.width/2, this.y, this.width, this.height, this.color, { fill: true, alpha: alpha, borderRadius: 4 });
 
         if (this.timingFeedback) {
             const arrow = this.timingFeedback === 'early' ? '←' : '→';

@@ -19,10 +19,11 @@ export default class NoteHighway {
 
         this.currentTime = 0;
         this.scrollSpeed = this.config.gameplay.scrollSpeed; 
+        this.scrollPosition = 0;
         this.staticLayerCanvas = document.createElement('canvas');
         this.staticLayerCanvas.width = this.renderer.width;
         this.staticLayerCanvas.height = this.renderer.height;
-        this._preRenderStaticLayers();
+        //this._preRenderStaticLayers();
     }
 
     _preRenderStaticLayers() {
@@ -34,6 +35,14 @@ export default class NoteHighway {
         this._drawLaneLabels(tempRenderer);
         this._drawHitLine(tempRenderer);
         this._drawBeatGrid(tempRenderer);
+    }
+
+    _drawStaticElements() {
+        this._drawLaneBackgrounds(this.renderer);
+        this._drawLabelArea(this.renderer);
+        this._drawLaneLabels(this.renderer);
+        this._drawHitWindows(this.renderer);
+        this._drawHitLine(this.renderer);
     }
 
     loadChart(notes) {
@@ -80,14 +89,15 @@ export default class NoteHighway {
     }
 
     update(deltaTime, currentTime) {
-        const leadTime = this.config.gameplay.LEAD_TIME || 4.0;
+        //const leadTime = this.config.gameplay.LEAD_TIME || 4.0;
         this.currentTime = currentTime;
+        this.scrollPosition = this.currentTime * this.scrollSpeed;
     
         this._spawnNotes();
         
-        for (const note of this.activeNotes) {
-            note.update(currentTime, this.scrollSpeed);
-        }
+        // for (const note of this.activeNotes) {
+        //     note.update(currentTime, this.scrollSpeed);
+        // }
         
         //this._cullNotes();
     }
@@ -136,6 +146,21 @@ export default class NoteHighway {
         renderer.drawLine(this.hitLineX, 0, this.hitLineX, renderer.height, '#cfcf25', 3, 0.5);
     }
 
+    _drawHitWindows(renderer) {
+        const hitLineX = this.config.visual.HIT_LINE_X;
+        const scrollSpeed = this.config.gameplay.scrollSpeed;
+
+        
+        const earlyWidth = this.config.gameplay.earlyHitWindow * scrollSpeed;
+        const earlyX = hitLineX - earlyWidth;
+        renderer.drawRect(earlyX, 0, earlyWidth, renderer.height, '#a051ca', { alpha: 0.15 });
+
+        const lateWidth = this.config.gameplay.lateHitWindow * scrollSpeed;
+        renderer.drawRect(hitLineX, 0, lateWidth, renderer.height, '#b87474', { alpha: 0.15 });
+
+
+    }
+
     _drawBeatGrid(renderer){
         for (let x = this.hitLineX; x < renderer.width; x += 100) {
             renderer.drawLine(x, 0, x, renderer.height, '#555', 1, 0.3);
@@ -146,13 +171,20 @@ export default class NoteHighway {
         const ctx = this.renderer.getContext();
         ctx.save();
 
-        ctx.drawImage(this.staticLayerCanvas, 0, 0);
+        this._drawStaticElements();
+        //ctx.drawImage(this.staticLayerCanvas, 0, 0);
+        ctx.translate(-this.scrollPosition + this.hitLineX, 0);
+
+        this._drawBeatGrid(this.renderer);
 
         for (const note of this.activeNotes) {
             note.render(this.renderer);
         }
 
         ctx.restore(); 
+        
+
+        //ctx.drawImage(this.staticLayerCanvas, 0, 0);
     }
 
 }

@@ -10,7 +10,7 @@ const VisualConfig = {
     CANVAS_HEIGHT: 720,
     NOTE_HEIGHT: 45,
     NOTE_WIDTH: 45,
-    HIT_LINE_X: 550,
+    HIT_LINE_X: 350,
     KICK_COLOR: '#FF0000',
     SNARE_COLOR: '#00FF00',
     HI_HAT_COLOR: '#0000FF',
@@ -41,6 +41,8 @@ const GameplayConfig = {
         expert: 4,
     },
     activeLanes: ['kick', 'snare', 'hiHatClosed', 'hiHatOpen', 'crashCymbal', 'rideCymbal', 'highTom', 'midTom', 'floorTom'],
+    earlyHitWindow: 0.15,
+    lateHitWindow: 0.25,
 };
 
 const AudioConfig = {
@@ -145,16 +147,16 @@ const InputConfig = {
         midTom: 'J',
         floorTom: 'K',
     },
-    inputBufferTime: 0.1, // seconds
+    inputBufferTime: 0.1,
     velocityRange: [0, 127],
-    midiChannel: 10, // Standard channel for drums
-    sensibilityThreshold: 10, // Minimum velocity to register a hit
+    midiChannel: 10, 
+    sensibilityThreshold: 10, 
 };
 
 const TimingConfig = {
     bpm: 105,
-    beatDivision: 4, // quarter notes
-    latencyCompensation: 0.05, // seconds
+    beatDivision: 4,
+    latencyCompensation: 0.05,
 };
 
 const UIConfig = {
