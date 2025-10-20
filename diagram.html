@@ -1,0 +1,481 @@
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arquitetura - Drum Learning Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            color: #e8e8e8;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 32px;
+            margin-bottom: 40px;
+            color: #f0f0f0;
+            letter-spacing: -0.02em;
+        }
+
+        .architecture {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .layer {
+            background: rgba(26, 26, 26, 0.8);
+            border: 1px solid #2a2a2a;
+            border-radius: 12px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+        }
+
+        .layer-title {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #9a9a9a;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #2a2a2a;
+        }
+
+        .module {
+            background: #242424;
+            border: 1px solid #3a3a3a;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .module:hover {
+            background: #2a2a2a;
+            border-color: #4a4a4a;
+            transform: translateX(4px);
+        }
+
+        .module-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #f0f0f0;
+            margin-bottom: 8px;
+        }
+
+        .module-desc {
+            font-size: 12px;
+            color: #6a6a6a;
+            line-height: 1.5;
+        }
+
+        .module-tag {
+            display: inline-block;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-top: 8px;
+            font-weight: 500;
+        }
+
+        .tag-core { background: #88a88033; color: #88a880; }
+        .tag-input { background: #d4a57433; color: #d4a574; }
+        .tag-audio { background: #7494b833; color: #7494b8; }
+        .tag-visual { background: #b8889433; color: #b88894; }
+        .tag-data { background: #a8948433; color: #a89484; }
+
+        .flow-diagram {
+            background: rgba(26, 26, 26, 0.8);
+            border: 1px solid #2a2a2a;
+            border-radius: 12px;
+            padding: 30px;
+            margin-top: 40px;
+        }
+
+        .flow-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: #f0f0f0;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 16px;
+            background: #242424;
+            border-radius: 8px;
+            border-left: 3px solid #88a880;
+        }
+
+        .flow-number {
+            width: 32px;
+            height: 32px;
+            background: #88a880;
+            color: #0a0a0a;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin-right: 16px;
+            flex-shrink: 0;
+        }
+
+        .flow-content {
+            flex: 1;
+        }
+
+        .flow-label {
+            font-weight: 600;
+            color: #f0f0f0;
+            margin-bottom: 4px;
+        }
+
+        .flow-desc {
+            font-size: 13px;
+            color: #6a6a6a;
+        }
+
+        .communication {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .comm-box {
+            background: rgba(26, 26, 26, 0.8);
+            border: 1px solid #2a2a2a;
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .comm-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #f0f0f0;
+        }
+
+        .event-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: #242424;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            font-family: 'SF Mono', 'Monaco', monospace;
+            font-size: 12px;
+        }
+
+        .event-name {
+            color: #d4a574;
+        }
+
+        .event-arrow {
+            color: #6a6a6a;
+        }
+
+        .event-target {
+            color: #88a880;
+        }
+
+        .legend {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 40px;
+            padding: 20px;
+            background: rgba(26, 26, 26, 0.6);
+            border-radius: 8px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #9a9a9a;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        @media (max-width: 1024px) {
+            .architecture {
+                grid-template-columns: 1fr;
+            }
+            
+            .communication {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🥁 Drum Learning Game - Arquitetura</h1>
+
+        <!-- Camadas Principais -->
+        <div class="architecture">
+            <!-- Core Layer -->
+            <div class="layer">
+                <div class="layer-title">Core (Núcleo)</div>
+                
+                <div class="module">
+                    <div class="module-name">Game</div>
+                    <div class="module-desc">Loop principal, coordena todos os módulos</div>
+                    <span class="module-tag tag-core">Game Loop</span>
+                </div>
+
+                <div class="module">
+                    <div class="module-name">EventBus</div>
+                    <div class="module-desc">Sistema de eventos pub/sub para comunicação</div>
+                    <span class="module-tag tag-core">Communication</span>
+                </div>
+
+                <div class="module">
+                    <div class="module-name">GameClock</div>
+                    <div class="module-desc">Gerencia tempo do jogo com pause/resume</div>
+                    <span class="module-tag tag-core">Timing</span>
+                </div>
+
+                <div class="module">
+                    <div class="module-name">Config</div>
+                    <div class="module-desc">Configurações globais do jogo</div>
+                    <span class="module-tag tag-core">Settings</span>
+                </div>
+
+                <div class="module">
+                    <div class="module-name">Metronome</div>
+                    <div class="module-desc">Controla BPM e beats da música</div>
+                    <span class="module-tag tag-core">Timing</span>
+                </div>
+            </div>
+
+            <!-- Input & Gameplay Layer -->
+            <div class="layer">
+                <div class="layer-title">Input & Gameplay</div>
+                
+                <div class="module">
+                    <div class="module-name">MIDIManager</div>
+                    <div class="module-desc">Detecta e processa entrada MIDI</div>
+                    <span class="module-tag tag-input">MIDI</span>
+                </div>
+
+                <div class="module">
+                    <div class="module-name">HitDetector</div>
+                    <div class="module-desc">Verifica timing e acurácia dos hits</div>
+                    <span class="module-tag tag-input">Detection</span>
+                </div>
+
+                <div class="module">
+                    <div class="module-name">NoteHighway</div>
+                    <div class="module-desc">Gerencia notas na tela e scrolling</div>
+                    <span class="module-tag tag-visual">Gameplay</span>
+                </div>
+
+                <div class="module">
+                    <div class="module-name">Note</div>
+                    <div class="module-desc">Classe individual de cada nota</div>
+                    <span class="module-tag tag-data">Entity</span>
+                </div>
+
+                <div class="module">
+                    <div class="module-name">ChartLoader</div>
+                    <div class="module-desc">Carrega e processa arquivos JSON</div>
+                    <span class="module-tag tag-data">Loader</span>
+                </div>
+            </div>
+
+            <!-- Rendering & Audio Layer -->
+            <div class="layer">
+                <div class="layer-title">Rendering & Audio</div>
+                
+                <div class="module">
+                    <div class="module-name">Renderer</div>
+                    <div class="module-desc">API de desenho no canvas</div>
+                    <span class="module-tag tag-visual">Canvas</span>
+                </div>
+
+                <div class="module">
+                    <div class="module-name">MetronomeVisual</div>
+                    <div class="module-desc">Desenha indicador visual de BPM</div>
+                    <span class="module-tag tag-visual">UI</span>
+                </div>
+
+                <div class="module">
+                    <div class="module-name">AudioEngine</div>
+                    <div class="module-desc">Gerencia Web Audio API e samples</div>
+                    <span class="module-tag tag-audio">Audio</span>
+                </div>
+
+                <div class="module">
+                    <div class="module-name">HTML/CSS UI</div>
+                    <div class="module-desc">HUD, score, combo, controles</div>
+                    <span class="module-tag tag-visual">DOM</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fluxo de Execução -->
+        <div class="flow-diagram">
+            <div class="flow-title">📋 Fluxo de Execução</div>
+            
+            <div class="flow-step">
+                <div class="flow-number">1</div>
+                <div class="flow-content">
+                    <div class="flow-label">Inicialização</div>
+                    <div class="flow-desc">main.js → Config → EventBus → MIDIManager → AudioEngine → Game</div>
+                </div>
+            </div>
+
+            <div class="flow-step">
+                <div class="flow-number">2</div>
+                <div class="flow-content">
+                    <div class="flow-label">Carregamento de Chart</div>
+                    <div class="flow-desc">ChartLoader carrega JSON → processa notas → NoteHighway recebe dados</div>
+                </div>
+            </div>
+
+            <div class="flow-step">
+                <div class="flow-number">3</div>
+                <div class="flow-content">
+                    <div class="flow-label">Game Loop (60 FPS)</div>
+                    <div class="flow-desc">GameClock atualiza tempo → NoteHighway spawn/update → Renderer desenha</div>
+                </div>
+            </div>
+
+            <div class="flow-step">
+                <div class="flow-number">4</div>
+                <div class="flow-content">
+                    <div class="flow-label">Input MIDI</div>
+                    <div class="flow-desc">MIDIManager detecta → EventBus emite 'midi:hit' → HitDetector verifica</div>
+                </div>
+            </div>
+
+            <div class="flow-step">
+                <div class="flow-number">5</div>
+                <div class="flow-content">
+                    <div class="flow-label">Hit Processing</div>
+                    <div class="flow-desc">HitDetector calcula timing → EventBus emite 'note:hit' → AudioEngine toca sample</div>
+                </div>
+            </div>
+
+            <div class="flow-step">
+                <div class="flow-number">6</div>
+                <div class="flow-content">
+                    <div class="flow-label">Loop do Chart</div>
+                    <div class="flow-desc">Game detecta fim da música → reseta clock e NoteHighway → reinicia</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comunicação via EventBus -->
+        <div class="communication">
+            <div class="comm-box">
+                <div class="comm-title">🔄 Eventos Principais</div>
+                
+                <div class="event-item">
+                    <span class="event-name">midi:connected</span>
+                    <span class="event-arrow">→</span>
+                    <span class="event-target">UI Status</span>
+                </div>
+
+                <div class="event-item">
+                    <span class="event-name">midi:hit</span>
+                    <span class="event-arrow">→</span>
+                    <span class="event-target">HitDetector</span>
+                </div>
+
+                <div class="event-item">
+                    <span class="event-name">note:hit</span>
+                    <span class="event-arrow">→</span>
+                    <span class="event-target">AudioEngine + UI</span>
+                </div>
+
+                <div class="event-item">
+                    <span class="event-name">note:miss</span>
+                    <span class="event-arrow">→</span>
+                    <span class="event-target">ScoreManager</span>
+                </div>
+            </div>
+
+            <div class="comm-box">
+                <div class="comm-title">⚙️ Configuração de Lanes</div>
+                
+                <div class="event-item">
+                    <span class="event-name">Lane 0</span>
+                    <span class="event-arrow">→</span>
+                    <span class="event-target">Kick (36)</span>
+                </div>
+
+                <div class="event-item">
+                    <span class="event-name">Lane 1</span>
+                    <span class="event-arrow">→</span>
+                    <span class="event-target">Snare (38)</span>
+                </div>
+
+                <div class="event-item">
+                    <span class="event-name">Lane 2</span>
+                    <span class="event-arrow">→</span>
+                    <span class="event-target">Hi-Hat Closed (42)</span>
+                </div>
+
+                <div class="event-item">
+                    <span class="event-name">Lane 3</span>
+                    <span class="event-arrow">→</span>
+                    <span class="event-target">Hi-Hat Open (46)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Legenda -->
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-dot" style="background: #88a880;"></div>
+                <span>Core/Timing</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot" style="background: #d4a574;"></div>
+                <span>Input/MIDI</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot" style="background: #7494b8;"></div>
+                <span>Audio</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot" style="background: #b88894;"></div>
+                <span>Visual/Rendering</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot" style="background: #a89484;"></div>
+                <span>Data/Charts</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

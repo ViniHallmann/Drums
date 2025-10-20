@@ -1,0 +1,773 @@
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagrama de Classes - Drum Learning Game</title>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'dark',
+            themeVariables: {
+                primaryColor: '#2a2a2a',
+                primaryTextColor: '#e8e8e8',
+                primaryBorderColor: '#4a4a4a',
+                lineColor: '#6a6a6a',
+                secondaryColor: '#1a1a1a',
+                tertiaryColor: '#242424',
+                background: '#0a0a0a',
+                mainBkg: '#1a1a1a',
+                secondBkg: '#242424',
+                fontSize: '14px',
+                fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
+            }
+        });
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            color: #e8e8e8;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 32px;
+            margin-bottom: 20px;
+            color: #f0f0f0;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 14px;
+            color: #9a9a9a;
+            margin-bottom: 40px;
+        }
+
+        .diagram-container {
+            background: rgba(26, 26, 26, 0.8);
+            border: 1px solid #2a2a2a;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 40px;
+            backdrop-filter: blur(10px);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+            min-width: 100%;
+        }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            background: #242424;
+            border: 1px solid #3a3a3a;
+            border-radius: 8px;
+            color: #e8e8e8;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            background: #2a2a2a;
+            border-color: #4a4a4a;
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: #88a880;
+            color: #0a0a0a;
+            border-color: #88a880;
+        }
+
+        .btn-primary:hover {
+            background: #9ab892;
+        }
+
+        .info-box {
+            background: rgba(26, 26, 26, 0.8);
+            border: 1px solid #2a2a2a;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 30px;
+        }
+
+        .info-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #f0f0f0;
+        }
+
+        .info-content {
+            font-size: 14px;
+            line-height: 1.8;
+            color: #9a9a9a;
+        }
+
+        .code-block {
+            background: #0a0a0a;
+            border: 1px solid #2a2a2a;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 16px;
+            overflow-x: auto;
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+            font-size: 12px;
+            line-height: 1.6;
+            color: #d4a574;
+        }
+
+        .legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 30px;
+        }
+
+        .legend-item {
+            background: #242424;
+            border: 1px solid #3a3a3a;
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .legend-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #f0f0f0;
+            margin-bottom: 8px;
+        }
+
+        .legend-desc {
+            font-size: 12px;
+            color: #6a6a6a;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🥁 Drum Learning Game</h1>
+        <p class="subtitle">Diagrama de Classes UML</p>
+
+        <div class="controls">
+            <button class="btn btn-primary" onclick="copyMermaidCode()">📋 Copiar Código Mermaid</button>
+            <button class="btn" onclick="downloadSVG()">⬇️ Baixar SVG</button>
+            <a class="btn" href="https://mermaid.live" target="_blank">🔗 Editar no Mermaid Live</a>
+        </div>
+
+        <div class="info-box">
+            <div class="info-title">📌 Como usar no Draw.io</div>
+            <div class="info-content">
+                <strong>Opção 1 - Importar Mermaid:</strong><br>
+                1. Copie o código Mermaid abaixo<br>
+                2. No Draw.io: Arrange → Insert → Advanced → Mermaid<br>
+                3. Cole o código e clique em Insert<br><br>
+                
+                <strong>Opção 2 - Recriar Manualmente:</strong><br>
+                1. Use o diagrama abaixo como referência visual<br>
+                2. Crie classes no Draw.io seguindo a estrutura<br>
+                3. Conecte com as setas indicadas (composição, dependência, etc)
+            </div>
+        </div>
+
+        <!-- Diagrama Principal -->
+        <div class="diagram-container">
+            <div class="mermaid">
+classDiagram
+    %% ===== CORE LAYER =====
+    class Game {
+        -EventBus eventBus
+        -Renderer renderer
+        -MIDIManager midiManager
+        -Config config
+        -GameClock clock
+        -NoteHighway noteHighway
+        -HitDetector hitDetector
+        -Metronome metronome
+        -MetronomeVisual metronomeVisual
+        -AudioEngine audioEngine
+        -ChartLoader chartLoader
+        -Chart currentChart
+        -boolean isRunning
+        -boolean isPlaying
+        -float deltaTime
+        +init() void
+        +start() void
+        +pause() void
+        +stop() void
+        +gameLoop(currentTime) void
+        +update(deltaTime) void
+        +render() void
+        +loadChart(chartPath) Promise
+        +startMusic() void
+        +pauseMusic() void
+        +stopMusic() void
+        +restartChart() void
+    }
+
+    class EventBus {
+        -Object events
+        +on(event, listener) void
+        +off(event, listener) void
+        +emit(event, data) void
+        +once(event, listener) void
+        +clear() void
+    }
+
+    class GameClock {
+        -float startTime
+        -float pausedTime
+        -float lastPauseTime
+        -float offset
+        -boolean isRunning
+        +start(offset) void
+        +pause() void
+        +resume() void
+        +reset() void
+        +getCurrentTime() float
+        +setOffset(offsetInSeconds) void
+    }
+
+    class Config {
+        +Object visual
+        +Object gameplay
+        +Object audio
+        +Object input
+        +Object timing
+        +Object ui
+        +Object metronome
+        +Object drumMap
+        +getMIDIAccess() Promise
+    }
+
+    class Metronome {
+        -int bpm
+        -int beatsPerBar
+        -int currentBeat
+        -int currentBar
+        -float beatFraction
+        -float secondsPerBeat
+        +update(currentTime) void
+        +reset() void
+        +getCurrentBeat() int
+        +getBeatFraction() float
+        +isDownbeat() boolean
+        +getBPM() int
+    }
+
+    %% ===== INPUT & GAMEPLAY LAYER =====
+    class MIDIManager {
+        -MIDIAccess midiAccess
+        -boolean isConnected
+        -EventBus eventBus
+        -Object drumMap
+        +init() Promise~boolean~
+        +getStatus() Object
+        -onMIDISuccess() void
+        -onMIDIMessage(message) void
+        -onMIDIDisconnected() void
+    }
+
+    class HitDetector {
+        -EventBus eventBus
+        -Object config
+        -float earlyHitWindow
+        -float lateHitWindow
+        -Array~Note~ activeNotes
+        -float currentTime
+        +init() void
+        +update(deltaTime, currentTime, activeNotes) void
+        +checkHit(midiNote) boolean
+        -_calculateAccuracy(timeDiff) string
+    }
+
+    class NoteHighway {
+        -Renderer renderer
+        -Config config
+        -int numLanes
+        -float laneHeight
+        -float hitLineX
+        -float labelAreaWidth
+        -Array~Object~ lanes
+        -Array~Note~ allNotes
+        -Array~Note~ activeNotes
+        -int currentNoteIndex
+        -float currentTime
+        -float scrollSpeed
+        -float scrollPosition
+        +init() void
+        +loadChart(notes) void
+        +update(deltaTime, currentTime) void
+        +render() void
+        -_spawnNotes() void
+        -_cullNotes() void
+        -_buildLaneConfig() Array
+        -_drawLaneBackgrounds(renderer) void
+        -_drawStaticElements() void
+    }
+
+    class Note {
+        -float time
+        -int lane
+        -int midiNote
+        -int velocity
+        -Config config
+        -Renderer renderer
+        -float width
+        -float height
+        -string color
+        -string originalColor
+        -float x
+        -float y
+        -boolean isActive
+        -boolean wasHit
+        -string timingFeedback
+        -float feedbackElapsed
+        -float feedbackAlpha
+        +update(currentTime, scrollSpeed) void
+        +render() void
+        +isPastHitLine() boolean
+        +isVisible(canvasWidth) boolean
+        +markAsHit() void
+        +markAsMiss() void
+    }
+
+    class ChartLoader {
+        -Config config
+        -string chartsPath
+        -Array~string~ availableCharts
+        +loadChart(chartPath) Promise~Chart~
+        +processChart(chartData) Chart
+        +convertTicksToSeconds(ticks, bpm, ticksPerBeat) float
+        +getAvailableCharts() Array~Object~
+    }
+
+    %% ===== RENDERING & AUDIO LAYER =====
+    class Renderer {
+        -HTMLCanvasElement canvas
+        -CanvasRenderingContext2D ctx
+        -Object visualConfig
+        -int width
+        -int height
+        +clear() void
+        +drawRect(x, y, width, height, color, options) void
+        +drawLine(x1, y1, x2, y2, color, width, alpha) void
+        +drawText(text, x, y, options) void
+        +drawCircle(x, y, radius, color, options) void
+        +drawDashedLine(x1, y1, x2, y2, color, dashPattern, width, alpha) void
+        +save() void
+        +restore() void
+        +getContext() CanvasRenderingContext2D
+        -_setupDefaults() void
+        -_roundRect(x, y, width, height, radius) void
+    }
+
+    class MetronomeVisual {
+        -Metronome metronome
+        -Config config
+        -int beatSpacing
+        -int beatRadius
+        -string inactiveColor
+        -string activeColor
+        -string downbeatColor
+        +render(renderer) void
+    }
+
+    class AudioEngine {
+        -Config config
+        -AudioContext audioContext
+        -Map~string,AudioBuffer~ sampleBuffers
+        -GainNode masterVolume
+        -boolean isLoaded
+        -int loadProgress
+        +init() Promise
+        +loadSamples() Promise
+        +playSample(name, velocity) void
+        +setMasterVolume(volume) void
+        +resume() void
+    }
+
+    %% ===== RELATIONSHIPS =====
+    
+    %% Game é o orquestrador central
+    Game *-- EventBus : contains
+    Game *-- GameClock : contains
+    Game *-- Metronome : contains
+    Game *-- MetronomeVisual : contains
+    Game *-- AudioEngine : contains
+    Game *-- ChartLoader : contains
+    Game *-- NoteHighway : contains
+    Game *-- HitDetector : contains
+    Game o-- Renderer : uses
+    Game o-- MIDIManager : uses
+    Game o-- Config : uses
+
+    %% EventBus conecta tudo
+    MIDIManager --> EventBus : emits events
+    HitDetector --> EventBus : emits events
+    HitDetector ..> EventBus : listens
+
+    %% Input flow
+    MIDIManager ..> Config : reads drumMap
+    HitDetector o-- Config : uses
+
+    %% Gameplay
+    NoteHighway *-- Note : manages many
+    NoteHighway o-- Renderer : uses
+    NoteHighway o-- Config : uses
+    HitDetector ..> Note : checks
+    ChartLoader ..> Note : creates
+    ChartLoader o-- Config : uses
+
+    %% Rendering
+    MetronomeVisual o-- Metronome : observes
+    MetronomeVisual o-- Renderer : uses
+    MetronomeVisual o-- Config : uses
+    Note o-- Renderer : uses
+
+    %% Audio
+    AudioEngine o-- Config : uses
+    Game ..> AudioEngine : triggers samples
+
+    %% Timing
+    Game ..> GameClock : queries time
+    Metronome ..> GameClock : syncs with
+            </div>
+        </div>
+
+        <!-- Código Mermaid para copiar -->
+        <div class="info-box">
+            <div class="info-title">📝 Código Mermaid</div>
+            <div class="code-block" id="mermaidCode">
+classDiagram
+    %% ===== CORE LAYER =====
+    class Game {
+        -EventBus eventBus
+        -Renderer renderer
+        -MIDIManager midiManager
+        -Config config
+        -GameClock clock
+        -NoteHighway noteHighway
+        -HitDetector hitDetector
+        -Metronome metronome
+        -MetronomeVisual metronomeVisual
+        -AudioEngine audioEngine
+        -ChartLoader chartLoader
+        -Chart currentChart
+        -boolean isRunning
+        -boolean isPlaying
+        -float deltaTime
+        +init() void
+        +start() void
+        +pause() void
+        +stop() void
+        +gameLoop(currentTime) void
+        +update(deltaTime) void
+        +render() void
+        +loadChart(chartPath) Promise
+        +startMusic() void
+        +pauseMusic() void
+        +stopMusic() void
+        +restartChart() void
+    }
+
+    class EventBus {
+        -Object events
+        +on(event, listener) void
+        +off(event, listener) void
+        +emit(event, data) void
+        +once(event, listener) void
+        +clear() void
+    }
+
+    class GameClock {
+        -float startTime
+        -float pausedTime
+        -float lastPauseTime
+        -float offset
+        -boolean isRunning
+        +start(offset) void
+        +pause() void
+        +resume() void
+        +reset() void
+        +getCurrentTime() float
+        +setOffset(offsetInSeconds) void
+    }
+
+    class Config {
+        +Object visual
+        +Object gameplay
+        +Object audio
+        +Object input
+        +Object timing
+        +Object ui
+        +Object metronome
+        +Object drumMap
+        +getMIDIAccess() Promise
+    }
+
+    class Metronome {
+        -int bpm
+        -int beatsPerBar
+        -int currentBeat
+        -int currentBar
+        -float beatFraction
+        -float secondsPerBeat
+        +update(currentTime) void
+        +reset() void
+        +getCurrentBeat() int
+        +getBeatFraction() float
+        +isDownbeat() boolean
+        +getBPM() int
+    }
+
+    class MIDIManager {
+        -MIDIAccess midiAccess
+        -boolean isConnected
+        -EventBus eventBus
+        -Object drumMap
+        +init() Promise~boolean~
+        +getStatus() Object
+        -onMIDISuccess() void
+        -onMIDIMessage(message) void
+        -onMIDIDisconnected() void
+    }
+
+    class HitDetector {
+        -EventBus eventBus
+        -Object config
+        -float earlyHitWindow
+        -float lateHitWindow
+        -Array~Note~ activeNotes
+        -float currentTime
+        +init() void
+        +update(deltaTime, currentTime, activeNotes) void
+        +checkHit(midiNote) boolean
+        -_calculateAccuracy(timeDiff) string
+    }
+
+    class NoteHighway {
+        -Renderer renderer
+        -Config config
+        -int numLanes
+        -float laneHeight
+        -float hitLineX
+        -float labelAreaWidth
+        -Array~Object~ lanes
+        -Array~Note~ allNotes
+        -Array~Note~ activeNotes
+        -int currentNoteIndex
+        -float currentTime
+        -float scrollSpeed
+        -float scrollPosition
+        +init() void
+        +loadChart(notes) void
+        +update(deltaTime, currentTime) void
+        +render() void
+        -_spawnNotes() void
+        -_cullNotes() void
+        -_buildLaneConfig() Array
+    }
+
+    class Note {
+        -float time
+        -int lane
+        -int midiNote
+        -int velocity
+        -Config config
+        -Renderer renderer
+        -float width
+        -float height
+        -string color
+        -float x
+        -float y
+        -boolean isActive
+        -boolean wasHit
+        -string timingFeedback
+        +update(currentTime, scrollSpeed) void
+        +render() void
+        +isPastHitLine() boolean
+        +isVisible(canvasWidth) boolean
+        +markAsHit() void
+        +markAsMiss() void
+    }
+
+    class ChartLoader {
+        -Config config
+        -string chartsPath
+        -Array~string~ availableCharts
+        +loadChart(chartPath) Promise~Chart~
+        +processChart(chartData) Chart
+        +convertTicksToSeconds(ticks, bpm, ticksPerBeat) float
+        +getAvailableCharts() Array~Object~
+    }
+
+    class Renderer {
+        -HTMLCanvasElement canvas
+        -CanvasRenderingContext2D ctx
+        -Object visualConfig
+        -int width
+        -int height
+        +clear() void
+        +drawRect() void
+        +drawLine() void
+        +drawText() void
+        +drawCircle() void
+        +save() void
+        +restore() void
+        +getContext() CanvasRenderingContext2D
+    }
+
+    class MetronomeVisual {
+        -Metronome metronome
+        -Config config
+        -int beatSpacing
+        -int beatRadius
+        +render(renderer) void
+    }
+
+    class AudioEngine {
+        -Config config
+        -AudioContext audioContext
+        -Map~string,AudioBuffer~ sampleBuffers
+        -GainNode masterVolume
+        -boolean isLoaded
+        +init() Promise
+        +loadSamples() Promise
+        +playSample(name, velocity) void
+        +setMasterVolume(volume) void
+        +resume() void
+    }
+
+    %% RELATIONSHIPS
+    Game *-- EventBus
+    Game *-- GameClock
+    Game *-- Metronome
+    Game *-- MetronomeVisual
+    Game *-- AudioEngine
+    Game *-- ChartLoader
+    Game *-- NoteHighway
+    Game *-- HitDetector
+    Game o-- Renderer
+    Game o-- MIDIManager
+    Game o-- Config
+
+    MIDIManager --> EventBus
+    HitDetector --> EventBus
+    HitDetector ..> EventBus
+
+    MIDIManager ..> Config
+    HitDetector o-- Config
+
+    NoteHighway *-- Note
+    NoteHighway o-- Renderer
+    NoteHighway o-- Config
+    HitDetector ..> Note
+    ChartLoader ..> Note
+    ChartLoader o-- Config
+
+    MetronomeVisual o-- Metronome
+    MetronomeVisual o-- Renderer
+    MetronomeVisual o-- Config
+    Note o-- Renderer
+
+    AudioEngine o-- Config
+    Game ..> AudioEngine
+
+    Game ..> GameClock
+    Metronome ..> GameClock
+            </div>
+        </div>
+
+        <!-- Legenda -->
+        <div class="info-box">
+            <div class="info-title">🔑 Legenda de Relacionamentos</div>
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-title">*-- (Composição)</div>
+                    <div class="legend-desc">Relação forte: o objeto não existe sem o dono. Ex: Game *-- EventBus</div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-title">o-- (Agregação)</div>
+                    <div class="legend-desc">Relação fraca: o objeto pode existir independente. Ex: Game o-- Renderer</div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-title">--> (Associação)</div>
+                    <div class="legend-desc">Relacionamento direto entre classes. Ex: MIDIManager --> EventBus</div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-title">..> (Dependência)</div>
+                    <div class="legend-desc">Usa temporariamente. Ex: HitDetector ..> Note</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function copyMermaidCode() {
+            const code = document.getElementById('mermaidCode').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                alert('✅ Código Mermaid copiado! Cole no Draw.io ou Mermaid Live Editor.');
+            });
+        }
+
+        function downloadSVG() {
+            const svg = document.querySelector('.mermaid svg');
+            if (!svg) {
+                alert('❌ Diagrama ainda não foi renderizado. Aguarde um momento.');
+                return;
+            }
+            
+            const svgData = new XMLSerializer().serializeToString(svg);
+            const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+            const svgUrl = URL.createObjectURL(svgBlob);
+            const downloadLink = document.createElement('a');
+            downloadLink.href = svgUrl;
+            downloadLink.download = 'drum-learning-game-diagram.svg';
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+        }
+    </script>
+</body>
+</html>

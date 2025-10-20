@@ -1,13 +1,3 @@
-// 'midi:connected' → { devices: Array<string> }
-// 'midi:error' → { error: Error }
-// 'midi:hit' → { 
-//   midiNote: number,
-//   velocity: number, 
-//   timestamp: number,
-//   instrument: string,  // ex: 'kick'
-//   lane: number         // ex: 0
-// }
-// 'midi:disconnected' → { reason: string }
 import Logger from '../utils/Logger.js';
 export default class EventBus {
     constructor() {

@@ -41,7 +41,7 @@ const GameplayConfig = {
         expert: 4,
     },
     activeLanes: ['kick', 'snare', 'hiHatClosed', 'hiHatOpen', 'crashCymbal', 'rideCymbal', 'highTom', 'midTom', 'floorTom'],
-    earlyHitWindow: 0.15,
+    earlyHitWindow: 0.25,
     lateHitWindow: 0.25,
 };
 

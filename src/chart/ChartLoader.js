@@ -3,14 +3,11 @@ export default class ChartLoader {
         this.config = config;
         this.chartsPath = 'assets/charts/';
         this.availableCharts = [
-            '01-basic-rock-beat.json'
-            // Adicione mais charts aqui conforme necessário
+            '01-basic-rock-beat.json',
+            'rock-groove-easy.json',
         ];
     }
 
-    /**
-     * Carrega um chart específico
-     */
     async loadChart(chartPath) {
         try {
             const response = await fetch(chartPath);
@@ -20,7 +17,6 @@ export default class ChartLoader {
             
             const chartData = await response.json();
             
-            // Converte os tempos das notas de ticks para segundos
             const processedChart = this.processChart(chartData);
             
             return processedChart;
@@ -30,20 +26,15 @@ export default class ChartLoader {
         }
     }
 
-    /**
-     * Processa o chart convertendo tempos e validando dados
-     */
     processChart(chartData) {
         const bpm = chartData.metadata?.bpm || 120;
-        const ticksPerBeat = 128; // Baseado no padrão do seu chart
+        const ticksPerBeat = 128;
         
-        // Converte notas de ticks para segundos
         const processedNotes = chartData.notes.map(note => ({
             ...note,
             time: this.convertTicksToSeconds(note.time, bpm, ticksPerBeat)
         }));
 
-        // Calcula duração baseada na última nota
         const lastNoteTime = processedNotes.length > 0 
             ? Math.max(...processedNotes.map(n => n.time))
             : 0;
@@ -53,23 +44,17 @@ export default class ChartLoader {
             notes: processedNotes,
             metadata: {
                 ...chartData.metadata,
-                duration: lastNoteTime + 2 // +2 segundos de buffer
+                duration: lastNoteTime + 2
             }
         };
     }
 
-    /**
-     * Converte ticks MIDI para segundos
-     */
     convertTicksToSeconds(ticks, bpm = 120, ticksPerBeat = 128) {
         const beatsPerSecond = bpm / 60;
         const ticksPerSecond = ticksPerBeat * beatsPerSecond;
         return ticks / ticksPerSecond;
     }
 
-    /**
-     * Lista charts disponíveis
-     */
     getAvailableCharts() {
         return this.availableCharts.map(chart => ({
             filename: chart,

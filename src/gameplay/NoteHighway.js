@@ -23,11 +23,11 @@ export default class NoteHighway {
         this.staticLayerCanvas = document.createElement('canvas');
         this.staticLayerCanvas.width = this.renderer.width;
         this.staticLayerCanvas.height = this.renderer.height;
-        //this._preRenderStaticLayers();
+        this._preRenderStaticLayers();
     }
 
     _preRenderStaticLayers() {
-        const tempRenderer = new Renderer('gameCanvas', this.config.visual); 
+        const tempRenderer = new Renderer(this.staticLayerCanvas, this.config.visual); 
         tempRenderer.ctx = this.staticLayerCanvas.getContext('2d');
         tempRenderer.clear();
         this._drawLaneBackgrounds(tempRenderer);
@@ -152,18 +152,25 @@ export default class NoteHighway {
 
         
         const earlyWidth = this.config.gameplay.earlyHitWindow * scrollSpeed;
-        const earlyX = hitLineX - earlyWidth;
-        renderer.drawRect(earlyX, 0, earlyWidth, renderer.height, '#a051ca', { alpha: 0.15 });
+        renderer.drawRect(hitLineX, 0, earlyWidth, renderer.height, '#a051ca', { alpha: 0.1 });
 
         const lateWidth = this.config.gameplay.lateHitWindow * scrollSpeed;
-        renderer.drawRect(hitLineX, 0, lateWidth, renderer.height, '#b87474', { alpha: 0.15 });
+        const lateX = hitLineX - lateWidth;
+        renderer.drawRect(lateX, 0, lateWidth, renderer.height, '#b87474', { alpha: 0.1 });
 
 
     }
 
     _drawBeatGrid(renderer){
-        for (let x = this.hitLineX; x < renderer.width; x += 100) {
-            renderer.drawLine(x, 0, x, renderer.height, '#555', 1, 0.3);
+        const bpm = this.config.gameplay.BPM || 120;
+        const secondsPerBeat = 60 / bpm;
+        const pixelsPerBeat = secondsPerBeat * this.scrollSpeed;
+        
+        const startWorld = Math.floor(this.scrollPosition / pixelsPerBeat) * pixelsPerBeat;
+        const endWorld = this.scrollPosition + renderer.width;
+        
+        for (let worldX = startWorld; worldX < endWorld; worldX += pixelsPerBeat) {
+            renderer.drawLine(worldX, 0, worldX, renderer.height, '#444', 1, 0.2);
         }
     }
 

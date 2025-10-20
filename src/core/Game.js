@@ -9,45 +9,43 @@ import MetronomeVisual from '../ui/MetronomeVisual.js';
 
 export default class Game {
     constructor(eventBus, renderer, midiManager, config) {
-        this.eventBus = eventBus;
-        this.renderer = renderer;
+        this.eventBus    = eventBus;
+        this.renderer    = renderer;
         this.midiManager = midiManager;
-        this.config = config;
+        this.config      = config;
 
-        this.isRunning = false;
+        this.isRunning     = false;
+        this.isPlaying     = false;
+        this.currentChart  = null;
         this.lastFrameTime = 0;
-        this.deltaTime = 0;
+        this.deltaTime     = 0;
 
-        this.clock       = new GameClock();
-        this.noteHighway = new NoteHighway(this.renderer, this.config);
-        this.hitDetector = new HitDetector(this.eventBus, this.config.gameplay);
-        this.metronome = new Metronome(this.config);
+        this.clock           = new GameClock();
+        this.noteHighway     = new NoteHighway(this.renderer, this.config);
+        this.hitDetector     = new HitDetector(this.eventBus, this.config.gameplay);
+        this.metronome       = new Metronome(this.config);
         this.metronomeVisual = new MetronomeVisual(this.metronome, this.config); 
-        
-        this.audioEngine = new AudioEngine(this.config.audio);
-        this.chartLoader = new ChartLoader(this.config);
-        
-        this.currentChart = null;
+        this.audioEngine     = new AudioEngine(this.config.audio);
+        this.chartLoader     = new ChartLoader(this.config);
 
         this.gameLoop = this.gameLoop.bind(this);
- 
-        this.isPlaying = false;
     }
 
     async loadChart(chartPath) {
         try {
             this.currentChart = await this.chartLoader.loadChart(chartPath);
             this.noteHighway.loadChart(this.currentChart.notes);
-            //Logger.info(`Chart loaded: ${this.currentChart.metadata.title}`);
+            Logger.info(`Chart loaded: ${this.currentChart.metadata.title}`);
             return this.currentChart;
         } catch (error) {
-            //Logger.error('Failed to load chart:', error);
+            Logger.error('Failed to load chart:', error);
             throw error;
         }
     }
 
     async loadDefaultChart() {
-        return await this.loadChart('assets/charts/01-basic-rock-beat.json');
+        //return await this.loadChart('01-basic-rock-beat.json');
+        return await this.loadChart('assets/charts/rock-groove-easy.json');
     }
 
     getAvailableCharts() {

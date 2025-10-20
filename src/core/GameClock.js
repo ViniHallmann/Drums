@@ -44,6 +44,4 @@ export default class GameClock {
     setOffset(offsetInSeconds) {
         this.offset = offsetInSeconds;
     }
-
-
 }

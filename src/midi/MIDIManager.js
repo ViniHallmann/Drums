@@ -1,22 +1,15 @@
-//constructor(eventBus, drumMap)
-//- midiAccess (referência da Web MIDI API)
-// - connectedInputs (array de dispositivos conectados)
-// - isConnected (boolean)
-// - eventBus (referência ao EventBus para emitir eventos)
-// - drumMap (recebido do Config, mapeia MIDI note → lane)
 import Logger from '../utils/Logger.js';
 export default class MIDIManager {
     constructor(eventBus, drumMap) {
-        this.midiAccess = null;
+        this.midiAccess  = null;
         this.isConnected = false;
-        this.eventBus = eventBus;
-        this.drumMap = drumMap;
+        this.eventBus    = eventBus;
+        this.drumMap     = drumMap;
     }
 
     async init() {
         try {
             this.midiAccess = await navigator.requestMIDIAccess();
-
             this.isConnected = true;
             this.eventBus.emit('midi:connected');
             this.onMIDISuccess();

@@ -1,10 +1,7 @@
 import Logger from '../utils/Logger.js';
 export default class Renderer {
-    constructor(canvasId, visualConfig) {
-        this.canvas = document.getElementById(canvasId);
-        if (!this.canvas) {
-            throw new Error(`Canvas com id "${canvasId}" não encontrado`);
-        }
+    constructor(canvas, visualConfig) {
+        this.canvas = canvas;
 
         this.ctx = this.canvas.getContext('2d');
         this.visualConfig = visualConfig;
@@ -13,7 +10,6 @@ export default class Renderer {
         this.height = this.canvas.height;
 
         this._setupDefaults();
-
     }
 
     _setupDefaults() {
@@ -21,6 +17,20 @@ export default class Renderer {
         this.ctx.imageSmoothingQuality = 'high';
         this.ctx.textBaseline = 'middle';
         this.ctx.textAlign = 'center';
+    }
+
+    _roundRect(x, y, width, height, radius) {
+        this.ctx.beginPath();
+        this.ctx.moveTo(x + radius, y);
+        this.ctx.lineTo(x + width - radius, y);
+        this.ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+        this.ctx.lineTo(x + width, y + height - radius);
+        this.ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+        this.ctx.lineTo(x + radius, y + height);
+        this.ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+        this.ctx.lineTo(x, y + radius);
+        this.ctx.quadraticCurveTo(x, y, x + radius, y);
+        this.ctx.closePath();
     }
 
     clear() {
@@ -150,25 +160,12 @@ export default class Renderer {
         this.ctx.restore();
     }
 
-    setAlpha(alpha) {
-        this.ctx.globalAlpha = alpha;
-    }
-
-    save() {
-        this.ctx.save();
-    }
-
-    restore() {
-        this.ctx.restore();
-    }
-
-    resize(width, height) {
-        this.width = width;
-        this.height = height;
-        this.canvas.width = width * this.pixelRatio;
-        this.canvas.height = height * this.pixelRatio;
-        this.ctx.scale(this.pixelRatio, this.pixelRatio);
-        this._setupDefaults();
+    drawImage(image, x, y, width = null, height = null) {
+        if (width && height) {
+            this.ctx.drawImage(image, x, y, width, height);
+        } else {
+            this.ctx.drawImage(image, x, y);
+        }
     }
 
     drawGradient(x, y, width, height, colorStops, direction = 'horizontal') {
@@ -190,18 +187,17 @@ export default class Renderer {
         this.ctx.restore();
     }
 
-    _roundRect(x, y, width, height, radius) {
-        this.ctx.beginPath();
-        this.ctx.moveTo(x + radius, y);
-        this.ctx.lineTo(x + width - radius, y);
-        this.ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-        this.ctx.lineTo(x + width, y + height - radius);
-        this.ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-        this.ctx.lineTo(x + radius, y + height);
-        this.ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-        this.ctx.lineTo(x, y + radius);
-        this.ctx.quadraticCurveTo(x, y, x + radius, y);
-        this.ctx.closePath();
+    setAlpha(alpha) {
+        this.ctx.globalAlpha = alpha;
+    }
+
+    resize(width, height) {
+        this.width = width;
+        this.height = height;
+        this.canvas.width = width * this.pixelRatio;
+        this.canvas.height = height * this.pixelRatio;
+        this.ctx.scale(this.pixelRatio, this.pixelRatio);
+        this._setupDefaults();
     }
 
     measureText(text, font = '14px Arial') {
@@ -212,21 +208,9 @@ export default class Renderer {
         return width;
     }
 
-    drawImage(image, x, y, width = null, height = null) {
-        if (width && height) {
-            this.ctx.drawImage(image, x, y, width, height);
-        } else {
-            this.ctx.drawImage(image, x, y);
-        }
-    }
-
     getContext() {
         return this.ctx;
     }
 
-    rotate(angle, centerX = 0, centerY = 0) {
-        this.ctx.translate(centerX, centerY);
-        this.ctx.rotate(angle);
-        this.ctx.translate(-centerX, -centerY);
-    }
+    
 }
