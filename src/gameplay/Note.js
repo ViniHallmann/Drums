@@ -25,9 +25,16 @@ export class Note {
         this.config = config;
         this.renderer = renderer;
         
+        
         this.width = config.visual.NOTE_WIDTH || 80;
         this.height = config.visual.NOTE_HEIGHT || 40;
         this.color = '#d4a574';
+
+        this.timingFeedback = null;
+        this.feedbackElapsed = 0;
+        this.feedbackDuration = 0.5;
+        this.feedbackAlpha = 1;
+
         
         this.x = 0;
         this.y = noteData.lane * laneHeight + (laneHeight - this.height) / 2;
@@ -41,6 +48,18 @@ export class Note {
     }
 
     update(currentTime, scrollSpeed) {
+
+        if (this.timingFeedback) {
+            this.feedbackElapsed += 0.016; 
+            const progress = this.feedbackElapsed / this.feedbackDuration;
+            
+            const direction = this.timingFeedback === 'early' ? -1 : 1;
+            this.x += direction * 100 * 0.016;
+            this.feedbackAlpha = 1 - progress;
+            
+            if (progress >= 1) this.isActive = false;
+            return;
+        }
         const timeToHit = this.time - currentTime;
         const distanceToHit = timeToHit * scrollSpeed;
         this.x = this.config.visual.HIT_LINE_X + distanceToHit;
@@ -53,7 +72,8 @@ export class Note {
     render() {
         if (!this.isActive) return;
 
-        const alpha = 0.7 + (this.velocity / 127) * 0.3;
+        const alpha = (this.timingFeedback ? this.feedbackAlpha : 1) * (0.7 + (this.velocity / 127) * 0.3);
+        //const alpha = 0.7 + (this.velocity / 127) * 0.3;
 
         this.renderer.drawRect(
             this.x,
@@ -67,6 +87,15 @@ export class Note {
                 borderRadius: 4
             }
         );
+
+        if (this.timingFeedback) {
+            const arrow = this.timingFeedback === 'early' ? '←' : '→';
+            this.renderer.drawText(arrow, this.x + this.width/2, this.y + this.height/2, {
+                font: 'bold 24px sans-serif',
+                color: this.color,
+                alpha: this.feedbackAlpha
+            });
+        }
     }
 
     isPastHitLine() {

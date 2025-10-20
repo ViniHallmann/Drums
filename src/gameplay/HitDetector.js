@@ -50,7 +50,17 @@ export default class HitDetector {
                 const timeDiff = this.currentTime - note.time;
                 
                 if (timeDiff >= -this.earlyHitWindow && timeDiff <= this.lateHitWindow) {
-                    note.markAsHit();
+                    const accuracy = this._calculateAccuracy(timeDiff);
+                
+                    if (accuracy === 'EARLY') {
+                        note.timingFeedback = 'early';
+                        note.color = '#a051caff';
+                    } else if (accuracy === 'LATE') {
+                        note.timingFeedback = 'late';
+                        note.color = '#b87474';
+                    } else {
+                        note.markAsHit();
+                    }
                     
                     this.eventBus.emit('note:hit', { 
                         note: note, 
