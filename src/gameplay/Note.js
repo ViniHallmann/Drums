@@ -68,7 +68,7 @@ export class Note {
 
     markAsMiss() {
         this.wasMissed = true;
-        this.isActive = false;
+        //this.isActive = false;
         this.color = '#ff0000ff';
     }
 
