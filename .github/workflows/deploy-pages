@@ -1,0 +1,44 @@
+name: Deploy to GitHub Pages
+
+on: # Executa em pushes para 'develop' e qualquer branch que comece com 'releases-'
+  push:
+    branches:
+      - develop
+      - 'releases-*.*' # O padrão para 'releases-1.0', 'releases-1.1', etc.
+
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy to gh-pages
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Determine Deployment Folder
+        id: get_folder
+        run: |
+          
+          if [ "${{ github.ref_name }}" = "develop" ]; then               # Se a branch for 'develop', a pasta de destino é 'dev'
+            echo "FOLDER_NAME=dev" >> $GITHUB_OUTPUT
+          else                                                            # Se for 'releases-1.0', remove 'releases-' e usa '1.0' como pasta
+            echo "FOLDER_NAME=${{ github.ref_name | replace('releases-', '') }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Deploy to gh-pages branch
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          
+          github_token: ${{ secrets.GITHUB_TOKEN }}                    # Token para permitir que a action faça push na branch gh-pages                                                                        
+          publish_branch: gh-pages                                     # Branch para onde os arquivos serão enviados
+          publish_dir: .                                               # Diretório que será publicado. Publica na raiza '.'
+          destination_dir: ${{ steps.get_folder.outputs.FOLDER_NAME }} # Publica no subdiretório que definimos no passo anterior
+          
+          keep_files: true
+          force_orphan: true # Limpa o histórico do commit de deploy
+          
+      - name: Print Deployed URL
+        run: |
+          echo "https://vinihallmann.github.io/Drums/${{ steps.get_folder.outputs.FOLDER_NAME }}/"
