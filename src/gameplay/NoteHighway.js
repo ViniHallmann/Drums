@@ -23,18 +23,6 @@ export default class NoteHighway {
         this.staticLayerCanvas = document.createElement('canvas');
         this.staticLayerCanvas.width = this.renderer.width;
         this.staticLayerCanvas.height = this.renderer.height;
-        this._preRenderStaticLayers();
-    }
-
-    _preRenderStaticLayers() {
-        const tempRenderer = new Renderer(this.staticLayerCanvas, this.config.visual); 
-        tempRenderer.ctx = this.staticLayerCanvas.getContext('2d');
-        tempRenderer.clear();
-        this._drawLaneBackgrounds(tempRenderer);
-        this._drawLabelArea(tempRenderer);
-        this._drawLaneLabels(tempRenderer);
-        this._drawHitLine(tempRenderer);
-        this._drawBeatGrid(tempRenderer);
     }
 
     _drawStaticElements() {
@@ -46,8 +34,6 @@ export default class NoteHighway {
     }
 
     loadChart(notes) {
-
-        
         this.allNotes = notes.map(noteData => {
             return new Note(this.renderer, noteData, this.config, this.laneHeight);
         });
@@ -77,29 +63,18 @@ export default class NoteHighway {
         }
     }
 
-    _cullNotes() {
-        this.activeNotes = this.activeNotes.filter(note => {
-            return note.isVisible(this.renderer.width);
-        });
-    }
-
     init() {
 
         //Logger.info('NoteHighway initialized with config:', this.config);
     }
 
     update(deltaTime, currentTime) {
-        //const leadTime = this.config.gameplay.LEAD_TIME || 4.0;
+
         this.currentTime = currentTime;
         this.scrollPosition = this.currentTime * this.scrollSpeed;
     
         this._spawnNotes();
-        
-        // for (const note of this.activeNotes) {
-        //     note.update(currentTime, this.scrollSpeed);
-        // }
-        
-        //this._cullNotes();
+    
     }
 
     //POR ENQUANTO NAO FAZ O BUILD BASEADO NA DIFICULDADE
@@ -174,7 +149,6 @@ export default class NoteHighway {
         ctx.save();
 
         this._drawStaticElements();
-        //ctx.drawImage(this.staticLayerCanvas, 0, 0);
         ctx.translate(-this.scrollPosition + this.hitLineX, 0);
 
         this._drawBeatGrid(this.renderer);
@@ -184,9 +158,6 @@ export default class NoteHighway {
         }
 
         ctx.restore(); 
-        
-
-        //ctx.drawImage(this.staticLayerCanvas, 0, 0);
     }
 
 }

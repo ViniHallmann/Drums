@@ -24,7 +24,7 @@ export default class HitDetector {
         if (absTimeDiff <= good) return 'GOOD';
         if (absTimeDiff <= early) return 'EARLY';
         if (absTimeDiff <= late) return 'LATE';
-        //if (absTimeDiff <= ok) return 'OK';
+
         else return 'MISS';
     }
 
@@ -36,12 +36,12 @@ export default class HitDetector {
         this.currentTime = currentTime;
         this.activeNotes = activeNotes;
 
-        // for (const note of this.activeNotes) {
-        //     if (this.currentTime > note.time + this.lateHitWindow && !note.wasHit && !note.wasMissed) {
-        //         //2note.markAsMiss(); // Marca para não verificar de novo.
-        //         //this.eventBus.emit('note:miss', { note: note });
-        //     }
-        // }
+        for (const note of this.activeNotes) {
+            if (this.currentTime > note.time + this.lateHitWindow && !note.wasHit && !note.wasMissed) {
+                note.markAsMiss();
+                this.eventBus.emit('note:miss', { note: note });
+            }
+        }
     }
 
     checkHit(midiNote) {

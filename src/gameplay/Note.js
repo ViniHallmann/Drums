@@ -25,6 +25,7 @@ export class Note {
 
         this.isActive = true;
         this.wasHit = false;
+        this.wasMiss = false;
 
         const drumInfo = config.input.midiMapping.find(drum => drum.midiNote === this.midiNote);
         this.color = drumInfo ? drumInfo.color : '#ffffff';
@@ -33,24 +34,6 @@ export class Note {
 
     update(currentTime, scrollSpeed) {
 
-        // if (this.timingFeedback) {
-        //     this.feedbackElapsed += 0.016; 
-        //     const progress = this.feedbackElapsed / this.feedbackDuration;
-            
-        //     const direction = this.timingFeedback === 'early' ? -1 : 1;
-        //     this.x += direction * 100 * 0.016;
-        //     this.feedbackAlpha = 1 - progress;
-            
-        //     if (progress >= 1) this.isActive = false;
-        //     return;
-        // }
-        // const timeToHit = this.time - currentTime;
-        // const distanceToHit = timeToHit * scrollSpeed;
-        // this.x = this.config.visual.HIT_LINE_X + distanceToHit;
-
-        // if (this.x + this.width < 0) {
-        //     this.isActive = false;
-        // }
     }
 
     render() {
@@ -84,8 +67,9 @@ export class Note {
     }
 
     markAsMiss() {
-        this.wasHit = false;
+        this.wasMissed = true;
         this.isActive = false;
+        this.color = '#ff0000ff';
     }
 
 

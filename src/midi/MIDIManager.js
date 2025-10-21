@@ -9,15 +9,19 @@ export default class MIDIManager {
 
     async init() {
         try {
-            this.midiAccess = await navigator.requestMIDIAccess();
+            //this.midiAccess = await MIDIManager._getMIDIAccess();
             this.isConnected = true;
             this.eventBus.emit('midi:connected');
-            this.onMIDISuccess();
+            //this.onMIDISuccess();
             return true;
         } catch (error) {
             this.isConnected = false;
             this.eventBus.emit('midi:connection_failed');
         }
+    }
+
+    static _getMIDIAccess() {
+        return navigator.requestMIDIAccess().then(this.onMIDISuccess.bind(this), this.onMIDIFailure.bind(this));
     }
 
     getStatus() {

@@ -48,10 +48,6 @@ export default class Game {
         //return await this.loadChart('assets/charts/rock-groove-easy.json');
     }
 
-    getAvailableCharts() {
-        return this.chartLoader.getAvailableCharts();
-    }
-
     async init() {
         this.noteHighway.init();
         this.hitDetector.init();
@@ -95,7 +91,7 @@ export default class Game {
         const currentTime = this.clock.getCurrentTime();
     
         if (this.isPlaying) {
-            this.checkChartLoop();
+            //this.checkChartLoop();
             this.metronome.update(currentTime);
             this.noteHighway.update(deltaTime, currentTime);
             this.hitDetector.update(deltaTime, currentTime, this.noteHighway.activeNotes);
@@ -131,17 +127,17 @@ export default class Game {
         this.resetChart();
     }
 
-    checkChartLoop() {
-        if (!this.currentChart) return;
+    // checkChartLoop() {
+    //     if (!this.currentChart) return;
         
-        const chartDuration = this.currentChart.metadata.duration || this.getChartDuration();
-        const currentTime = this.clock.getCurrentTime();
+    //     const chartDuration = this.currentChart.metadata.duration || this.getChartDuration();
+    //     const currentTime = this.clock.getCurrentTime();
         
-        if (currentTime >= chartDuration && !this.isLooping) {
-            this.isLooping = true;
-            this.restartChart();
-        }
-    }
+    //     if (currentTime >= chartDuration && !this.isLooping) {
+    //         this.isLooping = true;
+    //         this.restartChart();
+    //     }
+    // }
 
     restartChart() {
         this.resetChart();

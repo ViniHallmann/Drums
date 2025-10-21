@@ -1,9 +1,7 @@
 import Logger from '../utils/Logger.js';
 import Metronome from './Metronome.js';
 
-function getMIDIAccess() {
-    return navigator.requestMIDIAccess().then(onMIDISuccess, onMIDIFailure);
-}
+
 
 const VisualConfig = {
     CANVAS_WIDTH: 1280,
@@ -57,18 +55,6 @@ const AudioConfig = {
         hiHatOpen: 'assets/audio/drum-samples/hihat-open.wav',
     },
 };
-
-// const drumMap = {
-//         36: 'Bumbo (Kick)',
-//         38: 'Caixa (Snare)',
-//         42: 'Chimbal Fechado (Hi-Hat)',
-//         46: 'Chimbal Aberto (Open Hi-Hat)',
-//         49: 'Prato Ataque (Crash)',
-//         51: 'Prato Condução (Ride)',
-//         48: 'Tom 1 (High Tom)',
-//         45: 'Tom 2 (Mid Tom)',
-//         41: 'Tom 3 (Floor Tom)',
-//     };
 
 const InputConfig = {
     midiMapping: [
@@ -201,7 +187,6 @@ const Config = {
     input: InputConfig,
     timing: TimingConfig,
     ui: UIConfig,
-    drumMap: drumMap,
     metronome: MetronomeConfig,
 };
 
@@ -227,8 +212,5 @@ const DIFFICULTY_PROFILES = {
         activeLanes: ['kick', 'snare', 'hiHatClosed', 'hiHatOpen', 'crashCymbal', 'rideCymbal', 'highTom', 'midTom', 'floorTom'],
     },
 };
-
-Config.getMIDIAccess = getMIDIAccess;
-Config.DIFFICULTY_PROFILES = DIFFICULTY_PROFILES;
 
 export default Config;

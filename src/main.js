@@ -59,14 +59,12 @@ function configureEventBus(eventBus, hitDetector, audioEngine) {
 
     eventBus.on('note:hit', (data) => {
         Logger.info(`Evento: Nota acertada! Time diff: ${data.timeDiff.toFixed(3)}s`, data.note);
-        const instrumentName = data.note.config.input.midiMapping[data.note.midiNote].name;
+        const instrumentName = data.note.config.input.midiMapping[data.note.lane].name;
         audioEngine.playSample(instrumentName, data.note.velocity);
-        Logger.info(`Evento: Nota acertada! (note: ${data.note.midiNote})`);
     });
 
     eventBus.on('note:miss', (data) => {
-        Logger.info(`Evento: Nota perdida! (note: ${data.midiNote})`);
-
+        Logger.info(`Evento: Nota perdida! (note: ${data.note.midiNote})`);
     });
        
 }
