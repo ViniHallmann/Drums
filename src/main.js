@@ -10,6 +10,29 @@ const canvas = document.getElementById('gameCanvas');
 //Logger.setLevel('DEBUG');
 //Logger.enableTimestamp = true;
 
+function configureButtons() {
+    const playButton = document.getElementById('btnPlayPause');
+    const stopButton = document.getElementById('btnStop');
+    const resetButton = document.getElementById('btnRestart');
+
+    playButton.addEventListener('click', () => {
+        const event = new KeyboardEvent('keydown', { code: 'Space' });
+        document.dispatchEvent(event);
+    });
+
+    stopButton.addEventListener('click', () => {
+        const event = new KeyboardEvent('keydown', { code: 'Space' });
+        document.dispatchEvent(event);
+    });
+
+    resetButton.addEventListener('click', () => {
+        const event = new KeyboardEvent('keydown', { code: 'KeyR' });
+        document.dispatchEvent(event);
+    });
+
+
+}
+
 function configureEventBus(eventBus, hitDetector, audioEngine) {
     eventBus.on('midi:connected', () => {
         Logger.info('Evento: MIDI conectado');
@@ -94,6 +117,7 @@ async function initApp() {
     setupKeyboardControls(game, eventBus);
 }
 
+configureButtons();
 initApp();
     
 

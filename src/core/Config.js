@@ -58,84 +58,94 @@ const AudioConfig = {
     },
 };
 
-const drumMap = {
-        36: 'Bumbo (Kick)',
-        38: 'Caixa (Snare)',
-        42: 'Chimbal Fechado (Hi-Hat)',
-        46: 'Chimbal Aberto (Open Hi-Hat)',
-        49: 'Prato Ataque (Crash)',
-        51: 'Prato Condução (Ride)',
-        48: 'Tom 1 (High Tom)',
-        45: 'Tom 2 (Mid Tom)',
-        41: 'Tom 3 (Floor Tom)',
-    };
+// const drumMap = {
+//         36: 'Bumbo (Kick)',
+//         38: 'Caixa (Snare)',
+//         42: 'Chimbal Fechado (Hi-Hat)',
+//         46: 'Chimbal Aberto (Open Hi-Hat)',
+//         49: 'Prato Ataque (Crash)',
+//         51: 'Prato Condução (Ride)',
+//         48: 'Tom 1 (High Tom)',
+//         45: 'Tom 2 (Mid Tom)',
+//         41: 'Tom 3 (Floor Tom)',
+//     };
 
 const InputConfig = {
-    midiMapping: {
-        36: {
-            name: 'kick',
+    midiMapping: [
+        {
+            midiNote: 51,
+            name: 'rideCymbal',
             lane: 0,
-            color: '#d4a574',
-            sample: 'kick.wav',
-            aliases: [35]
+            color: '#ffcc00',
+            sample: 'ride.wav',
+            aliases: []
         },
-        38: {
-            name: 'snare',
+        {
+            midiNote: 41,
+            name: 'floorTom',
             lane: 1,
-            color: '#ffffff',
-            sample: 'snare.wav',
-            aliases: [40]
+            color: '#ff3333',
+            sample: 'floortom.wav',
+            aliases: [43, 44]
         },
-        42: {
-            name: 'hiHatClosed',
+        {
+            midiNote: 48,
+            name: 'highTom',
             lane: 2,
-            color: '#cccccc',
-            sample: 'hihat_closed.wav',
-            aliases: [41]
+            color: '#ff6666',
+            sample: 'hightom.wav',
+            aliases: []
         },
-        46: {
-            name: 'hiHatOpen',
+        {
+            midiNote: 45,
+            name: 'midTom',
             lane: 3,
-            color: '#cccccc',
-            sample: 'hihat_open.wav',
-            aliases: [45]
+            color: '#ff9966',
+            sample: 'midtom.wav',
+            aliases: []
         },
-        49: {
+        {
+            midiNote: 49,
             name: 'crashCymbal',
             lane: 4,
             color: '#ffcc00',
             sample: 'crash.wav',
             aliases: []
         },
-        51: {
-            name: 'rideCymbal',
+        {
+            midiNote: 46,
+            name: 'hiHatOpen',
             lane: 5,
-            color: '#ffcc00',
-            sample: 'ride.wav',
-            aliases: []
+            color: '#cccccc',
+            sample: 'hihat_open.wav',
+            aliases: [45]
         },
-        48: {
-            name: 'highTom',
+        {
+            midiNote: 42,
+            name: 'hiHatClosed',
             lane: 6,
-            color: '#ff6666',
-            sample: 'hightom.wav',
-            aliases: []
+            color: '#cccccc',
+            sample: 'hihat_closed.wav',
+            aliases: [41]
         },
-        45: {
-            name: 'midTom',
+        {
+            midiNote: 38,
+            name: 'snare',
             lane: 7,
-            color: '#ff9966',
-            sample: 'midtom.wav',
-            aliases: []
+            color: '#ffffff',
+            sample: 'snare.wav',
+            aliases: [40]
         },
-        41: {
-            name: 'floorTom',
+        {
+            midiNote: 36,
+            name: 'kick',
             lane: 8,
-            color: '#ff3333',
-            sample: 'floortom.wav',
-            aliases: [43, 44]
-        },
-    },
+            color: '#d4a574',
+            sample: 'kick.wav',
+            aliases: [35]
+        }
+        
+    ],
     keyMapping: {
         kick: 'A',
         snare: 'S',
@@ -150,7 +160,7 @@ const InputConfig = {
     inputBufferTime: 0.1,
     velocityRange: [0, 127],
     midiChannel: 10, 
-    sensibilityThreshold: 10, 
+    sensibilityThreshold: 10
 };
 
 const TimingConfig = {

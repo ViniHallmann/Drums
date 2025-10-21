@@ -104,21 +104,16 @@ export default class NoteHighway {
 
     //POR ENQUANTO NAO FAZ O BUILD BASEADO NA DIFICULDADE
     _buildLaneConfig() {
-        const lanes = [];
-    
-        for (const [midiNote, drumInfo] of Object.entries(this.config.input.midiMapping)) {
-            lanes.push({
-                lane:  drumInfo.lane,
-                name:  drumInfo.name.toUpperCase(),
-                color: drumInfo.color,
-                y:     drumInfo.lane * this.laneHeight,
-                midiNote: parseInt(midiNote)
-            });
-        }
-
-        lanes.sort((a, b) => a.lane - b.lane);
-        
-        return lanes;
+        return this.config.input.midiMapping
+        .slice()
+        .sort((a, b) => a.lane - b.lane)
+        .map(drumInfo => ({
+            lane: drumInfo.lane,
+            name: drumInfo.name.toUpperCase(),
+            color: drumInfo.color,
+            y: drumInfo.lane * this.laneHeight,
+            midiNote: drumInfo.midiNote
+        }));
     }
 
     _drawLaneBackgrounds(renderer) {

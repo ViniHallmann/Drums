@@ -44,8 +44,8 @@ export default class Game {
     }
 
     async loadDefaultChart() {
-        //return await this.loadChart('01-basic-rock-beat.json');
-        return await this.loadChart('assets/charts/rock-groove-easy.json');
+        return await this.loadChart('assets/charts/01-basic-rock-beat.json');
+        //return await this.loadChart('assets/charts/rock-groove-easy.json');
     }
 
     getAvailableCharts() {

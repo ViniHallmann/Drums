@@ -12,145 +12,145 @@
   "notes": [
     {
       "time": 0,
-      "lane": 0,
+      "lane": 8,
       "midiNote": 36,
       "velocity": 127
     },
     {
       "time": 0,
-      "lane": 2,
+      "lane": 6,
       "midiNote": 42,
       "velocity": 89
     },
     {
       "time": 64,
-      "lane": 2,
+      "lane": 6,
       "midiNote": 42,
       "velocity": 89
     },
     {
       "time": 128,
-      "lane": 1,
+      "lane": 7,
       "midiNote": 38,
       "velocity": 127
     },
     {
       "time": 128,
-      "lane": 2,
+      "lane": 6,
       "midiNote": 42,
       "velocity": 89
     },
     {
       "time": 192,
-      "lane": 2,
+      "lane": 6,
       "midiNote": 42,
       "velocity": 89
     },
     {
       "time": 256,
-      "lane": 0,
+      "lane": 8,
       "midiNote": 36,
       "velocity": 127
     },
     {
       "time": 256,
-      "lane": 2,
+      "lane": 6,
       "midiNote": 42,
       "velocity": 89
     },
     {
       "time": 320,
-      "lane": 2,
+      "lane": 6,
       "midiNote": 42,
       "velocity": 89
     },
     {
       "time": 384,
-      "lane": 1,
+      "lane": 6,
       "midiNote": 38,
       "velocity": 127
     },
     {
       "time": 384,
-      "lane": 2,
+      "lane": 6,
       "midiNote": 42,
       "velocity": 89
     },
     {
       "time": 448,
-      "lane": 2,
+      "lane": 6,
       "midiNote": 42,
       "velocity": 89
     },
     {
       "time": 512,
-      "lane": 0,
+      "lane": 8,
       "midiNote": 36,
       "velocity": 127
     },
     {
       "time": 512,
-      "lane": 2,
+      "lane": 6,
       "midiNote": 42,
       "velocity": 89
     },
     {
       "time": 576,
-      "lane": 2,
+      "lane": 6,
       "midiNote": 42,
       "velocity": 89
     },
     {
       "time": 640,
-      "lane": 1,
+      "lane": 7,
       "midiNote": 38,
       "velocity": 127
     },
     {
       "time": 640,
-      "lane": 2,
+      "lane": 6,
       "midiNote": 42,
       "velocity": 89
     },
     {
       "time": 704,
-      "lane": 2,
+      "lane": 6,
       "midiNote": 42,
       "velocity": 89
     },
     {
       "time": 768,
-      "lane": 0,
+      "lane": 8,
       "midiNote": 36,
       "velocity": 127
     },
     {
       "time": 768,
-      "lane": 2,
+      "lane": 6,
       "midiNote": 42,
       "velocity": 89
     },
     {
       "time": 832,
-      "lane": 2,
+      "lane": 6,
       "midiNote": 42,
       "velocity": 89
     },
     {
       "time": 896,
-      "lane": 1,
+      "lane": 7,
       "midiNote": 38,
       "velocity": 127
     },
     {
       "time": 896,
-      "lane": 2,
+      "lane": 6,
       "midiNote": 42,
       "velocity": 89
     },
     {
       "time": 960,
-      "lane": 2,
+      "lane": 6,
       "midiNote": 42,
       "velocity": 89
     }

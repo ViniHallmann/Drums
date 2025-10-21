@@ -26,7 +26,7 @@ export class Note {
         this.isActive = true;
         this.wasHit = false;
 
-        const drumInfo = Object.values(config.input.midiMapping).find(d => d.lane === this.lane);
+        const drumInfo = config.input.midiMapping.find(drum => drum.midiNote === this.midiNote);
         this.color = drumInfo ? drumInfo.color : '#ffffff';
         this.originalColor = this.color;
     }
