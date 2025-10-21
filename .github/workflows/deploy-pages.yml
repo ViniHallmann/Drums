@@ -23,6 +23,7 @@ jobs:
       - name: Determine Deployment Folder
         id: get_folder
         run: |
+          ref_name="${{ github.ref_name }}"
           
           if [ "$ref_name" = "develop" ]; then
             echo "FOLDER_NAME=dev" >> $GITHUB_OUTPUT
