@@ -4,9 +4,12 @@ on: # Executa em pushes para 'develop' e qualquer branch que comece com 'release
   push:
     branches:
       - develop
-      - 'releases-*.*' # O padrão para 'releases-1.0', 'releases-1.1', etc.
-
+      - 'releases-*.*' # Padrão para 'releases-1.0', 'releases-1.1', etc.
+      - 'feature/**'
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   deploy:
@@ -21,10 +24,19 @@ jobs:
         id: get_folder
         run: |
           
-          if [ "${{ github.ref_name }}" = "develop" ]; then               # Se a branch for 'develop', a pasta de destino é 'dev'
+          if [ "$ref_name" = "develop" ]; then
             echo "FOLDER_NAME=dev" >> $GITHUB_OUTPUT
-          else                                                            # Se for 'releases-1.0', remove 'releases-' e usa '1.0' como pasta
-            echo "FOLDER_NAME=${{ github.ref_name | replace('releases-', '') }}" >> $GITHUB_OUTPUT
+                  
+          elif [[ "$ref_name" == feature* ]]; then
+            echo "FOLDER_NAME=$ref_name" >> $GITHUB_OUTPUT  # Se começar com 'feature/', o nome da pasta será a branch inteira.
+
+          elif [[ "$ref_name" == releases-* ]]; then
+            folder_name=${ref_name#releases-}               # Remove o prefixo 'releases-'
+            echo "FOLDER_NAME=$folder_name" >> $GITHUB_OUTPUT
+          
+          else
+            echo "Branch não configurada para deploy: $ref_name"
+            exit 1 
           fi
 
       - name: Deploy to gh-pages branch
