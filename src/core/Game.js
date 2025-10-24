@@ -20,6 +20,7 @@ export default class Game {
         this.lastFrameTime = 0;
         this.deltaTime     = 0;
 
+        this.autoPlay = true;
         this.clock           = new GameClock();
         this.noteHighway     = new NoteHighway(this.renderer, this.config);
         this.hitDetector     = new HitDetector(this.eventBus, this.config.gameplay);
@@ -33,8 +34,17 @@ export default class Game {
 
     async loadChart(chartPath) {
         try {
-            this.currentChart = await this.chartLoader.loadChart(chartPath);
-            this.noteHighway.loadChart(this.currentChart.notes);
+            
+            const chartData = await this.chartLoader.loadChart(chartPath);
+            this.currentChart = chartData;
+            
+            if (chartData.metadata && chartData.metadata.bpm) {
+                Logger.info(`Setting BPM to ${chartData.metadata.bpm} from chart metadata.`);
+                this.config.gameplay.BPM = chartData.metadata.bpm;
+                this.metronome.setBPM(chartData.metadata.bpm);
+            }
+            
+            this.noteHighway.loadChart(chartData.notes);
             Logger.info(`Chart loaded: ${this.currentChart.metadata.title}`);
             return this.currentChart;
         } catch (error) {
@@ -44,7 +54,8 @@ export default class Game {
     }
 
     async loadDefaultChart() {
-        return await this.loadChart('assets/charts/01-basic-rock-beat.json');
+        return await this.loadChart('assets/charts/Television2.json');
+        //return await this.loadChart('assets/charts/01-basic-rock-beat.json');
         //return await this.loadChart('assets/charts/rock-groove-easy.json');
     }
 
@@ -87,6 +98,29 @@ export default class Game {
         requestAnimationFrame(this.gameLoop);
     }
 
+    _autoPlayNotes(currentTime) {
+        for (const note of this.noteHighway.activeNotes) {
+            // Se a nota ainda não foi tocada e está no timing perfeito
+            if (!note.wasHit && !note.autoPlayed) {
+                const timeDiff = currentTime - note.time;
+                
+                // Tocar quando estiver muito próximo do tempo perfeito (±10ms)
+                if (Math.abs(timeDiff) <= 0.01) {
+                    note.autoPlayed = true; // Flag para evitar tocar múltiplas vezes
+                    
+                    // Encontrar o instrumento pelo midiNote
+                    const drumInfo = this.config.input.midiMapping.find(
+                        d => d.midiNote === note.midiNote
+                    );
+                    
+                    if (drumInfo) {
+                        this.audioEngine.playSample(drumInfo.name, note.velocity);
+                    }
+                }
+            }
+        }
+    }
+
     update(deltaTime) {
         const currentTime = this.clock.getCurrentTime();
     
@@ -95,6 +129,9 @@ export default class Game {
             this.metronome.update(currentTime);
             this.noteHighway.update(deltaTime, currentTime);
             this.hitDetector.update(deltaTime, currentTime, this.noteHighway.activeNotes);
+        }
+        if (this.autoPlay && this.isPlaying) {
+            this._autoPlayNotes(currentTime);
         }
     }
 

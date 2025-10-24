@@ -150,7 +150,7 @@ const InputConfig = {
 };
 
 const TimingConfig = {
-    bpm: 105,
+    bpm: 166,
     beatDivision: 4,
     latencyCompensation: 0.05,
 };

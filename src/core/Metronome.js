@@ -1,6 +1,6 @@
 export default class Metronome {
     constructor(config) {
-        this.bpm = config.timing.bpm || 120;
+        this.bpm = 166; //config.gameplay.BPM || 120;
         this.beatsPerBar = config.timing.beatDivision || 4;
         
         this.currentBeat = 0;
@@ -43,5 +43,10 @@ export default class Metronome {
     
     getBPM() {
         return this.bpm;
+    }
+
+    setBPM(bpm){
+        this.bpm = bpm;
+        this.secondsPerBeat = 60 / this.bpm;
     }
 }
