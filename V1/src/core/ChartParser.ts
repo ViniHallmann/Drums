@@ -1,3 +1,5 @@
+import { ChartJSON, Chart, DrumPiece } from '../types/Chart';
+
 export class ChartParser {
     parse(json: ChartJSON): Chart {
         this.validate(json);

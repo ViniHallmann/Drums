@@ -1,3 +1,5 @@
+import { HitResult, HitType, Score } from '../types/Score';
+
 export class ScoringEngine {
 	private readonly TIMING_WINDOWS = {
 		PERFECT: 50,   // ±50ms

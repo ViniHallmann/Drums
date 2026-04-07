@@ -1,3 +1,5 @@
+import { Note } from '../types/Chart';
+
 export class TimingEngine {
     private audioContext: AudioContext;
     private startTime: number = 0;
