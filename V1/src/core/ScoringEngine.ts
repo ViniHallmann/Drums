@@ -24,17 +24,17 @@ export class ScoringEngine {
 
 		let result: HitType;
 		if (timeDiff <= this.TIMING_WINDOWS.PERFECT) {
-		result = 'PERFECT';
-		this.combo++;
+			result = 'PERFECT';
+			this.combo++;
 		} else if (timeDiff <= this.TIMING_WINDOWS.GOOD) {
-		result = 'GOOD';
-		this.combo++;
+			result = 'GOOD';
+			this.combo++;
 		} else if (timeDiff <= this.TIMING_WINDOWS.OK) {
-		result = 'OK';
-		this.combo++;
+			result = 'OK';
+			this.combo++;
 		} else {
-		result = 'MISS';
-		this.combo = 0;
+			result = 'MISS';
+			this.combo = 0;
 		}
 
 		this.maxCombo = Math.max(this.maxCombo, this.combo);
@@ -67,8 +67,8 @@ export class ScoringEngine {
 		if (this.hits.length === 0) return 0;
 		
 		const perfectHits = this.hits.filter(h => h.type === 'PERFECT').length;
-		const goodHits = this.hits.filter(h => h.type === 'GOOD').length;
-		const okHits = this.hits.filter(h => h.type === 'OK').length;
+		const goodHits 	  = this.hits.filter(h => h.type === 'GOOD').length;
+		const okHits 	  = this.hits.filter(h => h.type === 'OK').length;
 		
 		const weighted = (perfectHits * 100) + (goodHits * 75) + (okHits * 50);
 		return (weighted / (this.hits.length * 100)) * 100;
@@ -76,11 +76,11 @@ export class ScoringEngine {
 
 	getFinalScore(): Score {
 		return {
-		totalScore: this.totalScore,
-		accuracy: this.getAccuracy(),
-		maxCombo: this.maxCombo,
-		hits: this.hits,
-		stars: this.calculateStars(),
+			totalScore: this.totalScore,
+			accuracy: this.getAccuracy(),
+			maxCombo: this.maxCombo,
+			hits: this.hits,
+			stars: this.calculateStars(),
 		};
 	}
 
@@ -100,4 +100,4 @@ export class ScoringEngine {
 		this.totalScore = 0;
 		this.hits = [];
 	}
-	}
+}

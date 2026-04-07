@@ -4,8 +4,6 @@ import { MIDIEngine } from './MIDIEngine';
 import { Chart, Note } from '../types/Chart';
 import { HitResult, Score } from '../types/Score';
 
-// ─── Tipos públicos ──────────────────────────────────────────────────────────
-
 export interface NoteRenderState {
   id: string;
   note: Note;
@@ -17,11 +15,11 @@ export interface HitFeedback {
   id: string;
   type: 'PERFECT' | 'GOOD' | 'OK' | 'MISS';
   lane: number;
-  createdAt: number; // Date.now()
+  createdAt: number;
 }
 
 export interface GameRenderData {
-  currentTime: number;       // segundos
+  currentTime: number;
   notes: NoteRenderState[];
   hitFeedbacks: HitFeedback[];
 }
@@ -40,16 +38,10 @@ export interface GameLoopCallbacks {
   onSongEnd: (score: Score) => void;
 }
 
-// ─── Constantes ──────────────────────────────────────────────────────────────
 
-// TimingEngine.getCurrentTime() → segundos
-// ScoringEngine.evaluateHit() → ms
-// Portanto sempre convertemos: currentTime * 1000 antes de passar ao ScoringEngine
+const MISS_THRESHOLD_S = 0.200;
+const FEEDBACK_DURATION_MS = 600;
 
-const MISS_THRESHOLD_S = 0.200;   // 200ms após o beat = missed
-const FEEDBACK_DURATION_MS = 600; // quanto tempo o feedback fica visível
-
-// Mapeamento de teclado → MIDI note (fallback sem bateria física)
 const KEYBOARD_MAP: Record<string, number> = {
   a: 36, // Kick
   s: 38, // Snare
@@ -76,16 +68,13 @@ export class GameLoop {
   private isPaused = false;
   private songEnded = false;
 
-  // Estado de notas
   private noteStates = new Map<string, NoteRenderState>();
   private hitFeedbacks: HitFeedback[] = [];
   private feedbackCounter = 0;
 
-  // HUD state (atualizado via hit results e misses)
   private currentScore = 0;
   private currentCombo = 0;
 
-  // Referência do listener de teclado para cleanup
   private keydownHandler: ((e: KeyboardEvent) => void) | null = null;
 
   constructor(chart: Chart, callbacks: GameLoopCallbacks) {
@@ -95,7 +84,6 @@ export class GameLoop {
     this.scoringEngine = new ScoringEngine();
     this.midiEngine = new MIDIEngine();
 
-    // Inicializa estado de todas as notas
     chart.notes.forEach((note, index) => {
       const id = `note-${index}`;
       this.noteStates.set(id, { id, note, isHit: false, isMissed: false });
@@ -108,9 +96,9 @@ export class GameLoop {
     try {
       await this.midiEngine.initialize();
       this.midiEngine.onNote(this.handleInput.bind(this));
-      console.log('✅ MIDI inicializado');
+      console.log('MIDI inicializado');
     } catch {
-      console.warn('⚠️ MIDI indisponível, usando teclado como fallback');
+      console.warn('MIDI indisponível, usando teclado como fallback');
       this.setupKeyboardFallback();
     }
   }
@@ -176,7 +164,6 @@ export class GameLoop {
       hitFeedbacks: [...this.hitFeedbacks],
     });
 
-    // Emite estado do HUD
     this.callbacks.onHUDUpdate({
       score: this.currentScore,
       combo: this.currentCombo,
@@ -198,13 +185,12 @@ export class GameLoop {
 
       state.isMissed = true;
 
-      // Simula hit no ScoringEngine com diferença de 500ms (claramente MISS)
       const hitResult = this.scoringEngine.evaluateHit(
         noteTime * 1000,
         (noteTime + 0.5) * 1000,
       );
 
-      this.currentCombo = hitResult.combo; // volta a 0 no miss
+      this.currentCombo = hitResult.combo;
       this.currentScore += hitResult.score;
 
       this.addFeedback('MISS', state.note.lane);
@@ -212,12 +198,11 @@ export class GameLoop {
     }
   }
 
-  // ─── Processamento de input (MIDI ou teclado) ─────────────────────────────
+  // ─── Processamento de input ─────────────────────────────
 
   private handleInput(midiNote: number, _velocity: number): void {
     const currentTime = this.timingEngine.getCurrentTime();
 
-    // Busca a melhor nota candidata para esse MIDI note
     let best: { state: NoteRenderState; timeDiff: number } | null = null;
 
     for (const state of this.noteStates.values()) {
@@ -225,7 +210,6 @@ export class GameLoop {
       if (state.note.midiNote !== midiNote) continue;
 
       const timeDiff = Math.abs(currentTime - state.note.timeInSeconds);
-      // Descarta se estiver muito fora da janela de timing
       if (timeDiff > 0.150) continue;
 
       if (!best || timeDiff < best.timeDiff) {
@@ -238,7 +222,6 @@ export class GameLoop {
 
     best.state.isHit = true;
 
-    // ScoringEngine espera ms
     const hitResult = this.scoringEngine.evaluateHit(
       best.state.note.timeInSeconds * 1000,
       currentTime * 1000,
@@ -250,8 +233,6 @@ export class GameLoop {
     this.addFeedback(hitResult.type, best.state.note.lane);
     this.callbacks.onHit(hitResult);
   }
-
-  // ─── Helpers ─────────────────────────────────────────────────────────────
 
   private addFeedback(type: HitFeedback['type'], lane: number): void {
     this.hitFeedbacks.push({
