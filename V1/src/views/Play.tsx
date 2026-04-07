@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { Chart } from '../types/Chart';
 import { Score, HitResult } from '../types/Score';
-import { GameLoop, GameRenderData, GameHUDState, HitFeedback, NoteRenderState } from '../core/GameLoop';
+import { GameLoop, GameRenderData, GameHUDState } from '../core/GameLoop';
+import { Highway, HighwayRef } from '../components/game/Highway';
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
 
@@ -11,191 +12,11 @@ interface PlayProps {
   onExit: () => void;
 }
 
-// ─── Constantes de rendering ──────────────────────────────────────────────────
-
-const LOOK_AHEAD_S = 2.0;       // segundos visíveis no highway
-const HIT_ZONE_RATIO = 0.82;    // posição Y da hit zone (% do canvas)
-const TOP_MARGIN = 40;          // px do topo até onde as notas aparecem
-const NOTE_WIDTH = 52;
-const NOTE_HEIGHT = 18;
-const NOTE_BORDER_RADIUS = 6;
-const NUM_LANES = 9;
-
-// Cores por drum piece
-const DRUM_COLORS: Record<string, string> = {
-  kick: '#FF5252',
-  snare: '#448AFF',
-  hihat: '#FFD740',
-  'hihat-open': '#FFE082',
-  'tom-high': '#69F0AE',
-  'tom-mid': '#40C4FF',
-  'tom-low': '#B388FF',
-  crash: '#FFFFFF',
-  ride: '#80D8FF',
-  unknown: '#90A4AE',
-};
-
-const FEEDBACK_COLORS: Record<string, string> = {
-  PERFECT: '#FFD740',
-  GOOD: '#69F0AE',
-  OK: '#FF9800',
-  MISS: '#FF5252',
-};
-
-// ─── Função de rendering do canvas ───────────────────────────────────────────
-// Fora do componente para evitar re-criações e closures stale
-
-function renderCanvas(
-  canvas: HTMLCanvasElement,
-  data: GameRenderData,
-  chart: Chart,
-): void {
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return;
-
-  const W = canvas.width;
-  const H = canvas.height;
-  const hitZoneY = H * HIT_ZONE_RATIO;
-  const highwayWidth = Math.min(W * 0.7, 600);
-  const highwayLeft = (W - highwayWidth) / 2;
-  const laneWidth = highwayWidth / NUM_LANES;
-  const { currentTime, notes, hitFeedbacks } = data;
-
-  // ── Fundo ───────────────────────────────────────────────────────────────
-  ctx.fillStyle = '#0D0D14';
-  ctx.fillRect(0, 0, W, H);
-
-  // ── Highway: fundo gradiente ─────────────────────────────────────────────
-  const grad = ctx.createLinearGradient(0, TOP_MARGIN, 0, H);
-  grad.addColorStop(0, 'rgba(255,255,255,0.02)');
-  grad.addColorStop(1, 'rgba(255,255,255,0.06)');
-  ctx.fillStyle = grad;
-  ctx.fillRect(highwayLeft, TOP_MARGIN, highwayWidth, H - TOP_MARGIN);
-
-  // ── Linhas das lanes ─────────────────────────────────────────────────────
-  ctx.strokeStyle = 'rgba(255,255,255,0.08)';
-  ctx.lineWidth = 1;
-  for (let i = 0; i <= NUM_LANES; i++) {
-    const x = highwayLeft + i * laneWidth;
-    ctx.beginPath();
-    ctx.moveTo(x, TOP_MARGIN);
-    ctx.lineTo(x, H);
-    ctx.stroke();
-  }
-
-  // ── Hit zone ─────────────────────────────────────────────────────────────
-  ctx.strokeStyle = 'rgba(255,255,255,0.35)';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(highwayLeft, hitZoneY);
-  ctx.lineTo(highwayLeft + highwayWidth, hitZoneY);
-  ctx.stroke();
-
-  // Glow na hit zone
-  const hitZoneGlow = ctx.createLinearGradient(0, hitZoneY - 12, 0, hitZoneY + 12);
-  hitZoneGlow.addColorStop(0, 'rgba(255,255,255,0)');
-  hitZoneGlow.addColorStop(0.5, 'rgba(255,255,255,0.06)');
-  hitZoneGlow.addColorStop(1, 'rgba(255,255,255,0)');
-  ctx.fillStyle = hitZoneGlow;
-  ctx.fillRect(highwayLeft, hitZoneY - 12, highwayWidth, 24);
-
-  // ── Notas ────────────────────────────────────────────────────────────────
-  for (const state of notes) {
-    if (state.isHit) continue;
-
-    const { note, isMissed } = state;
-    const secondsUntilHit = note.timeInSeconds - currentTime;
-
-    // Só renderiza notas dentro da janela de visibilidade
-    if (secondsUntilHit > LOOK_AHEAD_S || secondsUntilHit < -0.3) continue;
-
-    const laneIndex = Math.max(0, Math.min(note.lane - 1, NUM_LANES - 1));
-    const x = highwayLeft + laneIndex * laneWidth + laneWidth / 2;
-    const y = hitZoneY - (secondsUntilHit / LOOK_AHEAD_S) * (hitZoneY - TOP_MARGIN);
-
-    const color = DRUM_COLORS[note.drumPiece] ?? DRUM_COLORS.unknown;
-    const alpha = isMissed ? 0.25 : 1;
-
-    drawNote(ctx, x, y, color, alpha);
-  }
-
-  // ── Hit feedback (Perfect / Good / Ok / Miss) ─────────────────────────────
-  const now = Date.now();
-  for (const feedback of hitFeedbacks) {
-    const age = now - feedback.createdAt;
-    const progress = age / 600; // 0 → 1 durante 600ms
-    if (progress >= 1) continue;
-
-    const laneIndex = Math.max(0, Math.min(feedback.lane - 1, NUM_LANES - 1));
-    const x = highwayLeft + laneIndex * laneWidth + laneWidth / 2;
-    const y = hitZoneY - 30 - progress * 40; // sobe enquanto desaparece
-    const alpha = 1 - progress;
-
-    ctx.save();
-    ctx.globalAlpha = alpha;
-    ctx.font = 'bold 14px system-ui, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillStyle = FEEDBACK_COLORS[feedback.type] ?? '#fff';
-    ctx.fillText(feedback.type, x, y);
-    ctx.restore();
-  }
-}
-
-function drawNote(
-  ctx: CanvasRenderingContext2D,
-  cx: number,
-  cy: number,
-  color: string,
-  alpha: number,
-): void {
-  const x = cx - NOTE_WIDTH / 2;
-  const y = cy - NOTE_HEIGHT / 2;
-
-  ctx.save();
-  ctx.globalAlpha = alpha;
-
-  // Sombra / glow
-  ctx.shadowColor = color;
-  ctx.shadowBlur = 12;
-
-  // Corpo da nota
-  ctx.fillStyle = color;
-  roundRect(ctx, x, y, NOTE_WIDTH, NOTE_HEIGHT, NOTE_BORDER_RADIUS);
-  ctx.fill();
-
-  // Brilho interno
-  ctx.shadowBlur = 0;
-  ctx.fillStyle = 'rgba(255,255,255,0.25)';
-  roundRect(ctx, x + 2, y + 2, NOTE_WIDTH - 4, NOTE_HEIGHT / 2 - 2, NOTE_BORDER_RADIUS - 2);
-  ctx.fill();
-
-  ctx.restore();
-}
-
-function roundRect(
-  ctx: CanvasRenderingContext2D,
-  x: number, y: number,
-  w: number, h: number,
-  r: number,
-): void {
-  ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.lineTo(x + w - r, y);
-  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-  ctx.lineTo(x + w, y + h - r);
-  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-  ctx.lineTo(x + r, y + h);
-  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-  ctx.lineTo(x, y + r);
-  ctx.quadraticCurveTo(x, y, x + r, y);
-  ctx.closePath();
-}
-
 // ─── Componente Play ──────────────────────────────────────────────────────────
 
 export default function Play({ chart, onGameEnd, onExit }: PlayProps) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const gameLoopRef = useRef<GameLoop | null>(null);
+  const highwayRef = useRef<HighwayRef>(null);
 
   const [hud, setHud] = useState<GameHUDState>({
     score: 0,
@@ -203,29 +24,19 @@ export default function Play({ chart, onGameEnd, onExit }: PlayProps) {
     accuracy: 0,
     progress: 0,
   });
+  
   const [lastHitType, setLastHitType] = useState<string | null>(null);
   const [isPaused, setIsPaused] = useState(false);
   const [isStarted, setIsStarted] = useState(false);
-
-  // ── Ajusta canvas ao tamanho da janela ───────────────────────────────────
-  useEffect(() => {
-    const resize = () => {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-    resize();
-    window.addEventListener('resize', resize);
-    return () => window.removeEventListener('resize', resize);
-  }, []);
 
   // ── Inicializa e inicia o GameLoop ───────────────────────────────────────
   useEffect(() => {
     const gameLoop = new GameLoop(chart, {
       onRender: (data: GameRenderData) => {
-        const canvas = canvasRef.current;
-        if (canvas) renderCanvas(canvas, data, chart);
+        // Renderiza diretamente via ref, evitando atualizações de estado 60x por segundo
+        if (highwayRef.current) {
+          highwayRef.current.renderFrame(data);
+        }
       },
       onHUDUpdate: (hudState: GameHUDState) => {
         setHud(hudState);
@@ -283,13 +94,12 @@ export default function Play({ chart, onGameEnd, onExit }: PlayProps) {
 
   // ─── Render ─────────────────────────────────────────────────────────────
   return (
-    <div style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden', background: '#0D0D14' }}>
+    <div style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden', background: '#0a0a0a' }}>
 
-      {/* Canvas do jogo */}
-      <canvas
-        ref={canvasRef}
-        style={{ display: 'block', position: 'absolute', inset: 0 }}
-      />
+      {/* Componente que agora detém e orquestra inteiramente o Canvas de renderização das notas */}
+      <div style={{ display: 'block', position: 'absolute', inset: 0, top: 40, bottom: 20 }}>
+        <Highway ref={highwayRef} chart={chart} />
+      </div>
 
       {/* HUD — topo */}
       <div style={{
