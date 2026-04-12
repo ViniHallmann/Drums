@@ -2,24 +2,22 @@ import { useState, useMemo } from 'react';
 import { ChartParser } from './core/ChartParser';
 import { Chart } from './types/Chart';
 import { Score } from './types/Score';
-import { SAMPLE_CHART_JSON } from './utils/sampleChart';
+import { ChartJSON } from './types/Chart';
+import sampleChartJson from './assets/charts/01-basic-rock-beat.json';
 import Play from './views/Play';
 import Results from './views/Results';
+import { AppScreen } from './types/Screens';
 
-// ─── Tipos ────────────────────────────────────────────────────────────────────
-
-type AppScreen = 'menu' | 'playing' | 'results';
-
-// ─── App ──────────────────────────────────────────────────────────────────────
 
 export default function App() {
-  const [screen, setScreen] = useState<AppScreen>('menu');
+  //const [screen, setScreen] = useState<AppScreen>('menu');
+  const [screen, setScreen] = useState<AppScreen>('playing');
   const [lastScore, setLastScore] = useState<Score | null>(null);
 
-  // Parseia o chart uma única vez (useMemo garante isso)
+  //Parseia o chart uma única vez
   const chart: Chart = useMemo(() => {
     const parser = new ChartParser();
-    return parser.parse(SAMPLE_CHART_JSON);
+    return parser.parse(sampleChartJson as unknown as ChartJSON);
   }, []);
 
   const handleGameEnd = (score: Score) => {
@@ -32,7 +30,6 @@ export default function App() {
     setScreen('playing');
   };
 
-  // ── Renders por tela ────────────────────────────────────────────────────
   if (screen === 'playing') {
     return (
       <Play

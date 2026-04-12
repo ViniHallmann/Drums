@@ -38,22 +38,23 @@ export const DRUM_COLORS: Record<string, string> = {
 export const FEEDBACK_COLORS: Record<string, string> = {
   PERFECT: '#FFD740',
   GOOD: '#69F0AE',
-  OK: '#FF9800',
+  EARLY: '#a051caff',
+  LATE: '#b87474',
   MISS: '#FF5252',
 };
 
-// Nao sei se aqui eh o lugar certo do keyboard_mapping
-// const KEYBOARD_MAP: Record<string, number> = {
-//   a: 36, // Kick
-//   s: 38, // Snare
-//   d: 42, // Hi-hat fechado
-//   f: 46, // Hi-hat aberto
-//   j: 48, // Tom alto
-//   k: 47, // Tom médio
-//   l: 45, // Tom baixo
-//   ';': 49, // Crash
-//   "'": 51, // Ride
-// };
+
+export const KEYBOARD_MAP: Record<string, number> = {
+  a: 36, // Kick
+  s: 38, // Snare
+  d: 42, // Hi-hat fechado
+  f: 46, // Hi-hat aberto
+  j: 48, // Tom alto
+  k: 47, // Tom médio
+  l: 45, // Tom baixo
+  ';': 49, // Crash
+  "'": 51, // Ride
+};
 
 export const GAME_CONFIG = {
   LANE_HEIGHT: 40,

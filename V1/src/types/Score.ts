@@ -1,16 +1,16 @@
-export type HitType = 'PERFECT' | 'GOOD' | 'OK' | 'MISS';
+export type HitType = 'PERFECT' | 'GOOD' | 'EARLY' | 'LATE' | 'MISS';
 
 export interface HitResult {
     type: HitType;
-    timeDiff: number;      // Em ms
+    timeDiff: number;
     score: number;
     combo: number;
 }
 
 export interface Score {
     totalScore: number;
-    accuracy: number;      // 0-100%
+    accuracy: number;
     maxCombo: number;
     hits: HitResult[];
-    stars: number;         // 0-5
+    stars: number;
 }

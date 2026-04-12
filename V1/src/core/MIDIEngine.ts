@@ -39,7 +39,9 @@ export class MIDIEngine {
     }
 
     private handleMIDIMessage(event: MIDIMessageEvent): void {
-        const [status, note, velocity] = event.data;
+        const data = event.data;
+        if (!data) return;
+        const [status, note, velocity] = data;
         
         // Note On (144-159) com velocity > 0
         if (status >= 144 && status <= 159 && velocity > 0) {

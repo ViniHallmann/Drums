@@ -2,7 +2,10 @@ import { TimingEngine } from './TimingEngine';
 import { ScoringEngine } from './ScoringEngine';
 import { MIDIEngine } from './MIDIEngine';
 import { Chart, Note } from '../types/Chart';
-import { HitResult, Score } from '../types/Score';
+import { HitResult, Score, HitType } from '../types/Score';
+import { HitDetector } from './HitDetector';
+import { Metronome } from './Metronome';
+import { KEYBOARD_MAP } from '../constants/game';
 
 export interface NoteRenderState {
   id: string;
@@ -13,7 +16,7 @@ export interface NoteRenderState {
 
 export interface HitFeedback {
   id: string;
-  type: 'PERFECT' | 'GOOD' | 'OK' | 'MISS';
+  type: HitType;
   lane: number;
   createdAt: number;
 }
@@ -22,6 +25,8 @@ export interface GameRenderData {
   currentTime: number;
   notes: NoteRenderState[];
   hitFeedbacks: HitFeedback[];
+  beatFraction: number;
+  isDownbeat: boolean;
 }
 
 export interface GameHUDState {
@@ -39,26 +44,27 @@ export interface GameLoopCallbacks {
 }
 
 
-const MISS_THRESHOLD_S = 0.200;
 const FEEDBACK_DURATION_MS = 600;
 
-const KEYBOARD_MAP: Record<string, number> = {
-  a: 36, // Kick
-  s: 38, // Snare
-  d: 42, // Hi-hat fechado
-  f: 46, // Hi-hat aberto
-  j: 48, // Tom alto
-  k: 47, // Tom médio
-  l: 45, // Tom baixo
-  ';': 49, // Crash
-  "'": 51, // Ride
-};
+// const KEYBOARD_MAP: Record<string, number> = {
+//   a: 36, // Kick
+//   s: 38, // Snare
+//   d: 42, // Hi-hat fechado
+//   f: 46, // Hi-hat aberto
+//   j: 48, // Tom alto
+//   k: 47, // Tom médio
+//   l: 45, // Tom baixo
+//   ';': 49, // Crash
+//   "'": 51, // Ride
+// };
 
 // ─── GameLoop ────────────────────────────────────────────────────────────────
 
 export class GameLoop {
   private timingEngine: TimingEngine;
   private scoringEngine: ScoringEngine;
+  private hitDetector: HitDetector;
+  private metronome: Metronome;
   private midiEngine: MIDIEngine;
   private chart: Chart;
   private callbacks: GameLoopCallbacks;
@@ -78,10 +84,13 @@ export class GameLoop {
   private keydownHandler: ((e: KeyboardEvent) => void) | null = null;
 
   constructor(chart: Chart, callbacks: GameLoopCallbacks) {
-    this.chart = chart;
-    this.callbacks = callbacks;
-    this.timingEngine = new TimingEngine(chart.metadata.bpm);
-    this.scoringEngine = new ScoringEngine();
+    this.chart          = chart;
+    this.callbacks      = callbacks;
+    this.timingEngine   = new TimingEngine(chart.metadata.bpm);
+    this.scoringEngine  = new ScoringEngine();
+    this.hitDetector    = new HitDetector();
+    this.metronome      = new Metronome(chart.metadata.bpm);
+    this.metronome.setAudioContext(this.timingEngine.getAudioContext());
     this.midiEngine = new MIDIEngine();
 
     chart.notes.forEach((note, index) => {
@@ -90,21 +99,21 @@ export class GameLoop {
     });
   }
 
-  // ─── Inicialização (async por causa do MIDI) ───────────────────────────────
-
+  //Inicialização
   async initialize(): Promise<void> {
     try {
       await this.midiEngine.initialize();
       this.midiEngine.onNote(this.handleInput.bind(this));
       console.log('MIDI inicializado');
-    } catch {
-      console.warn('MIDI indisponível, usando teclado como fallback');
+    } catch (e) {
+      console.warn('MIDI indisponível', e);
+    } finally {
       this.setupKeyboardFallback();
+      console.log('Teclado configurado como fallback/complemento');
     }
   }
 
-  // ─── Ciclo de vida ────────────────────────────────────────────────────────
-
+  //Ciclo de vida
   start(): void {
     this.isRunning = true;
     this.isPaused = false;
@@ -139,29 +148,56 @@ export class GameLoop {
     }
   }
 
-  // ─── Loop principal (RAF) ─────────────────────────────────────────────────
+  restart(): void {
+    this.isRunning = false;
+    this.isPaused = false;
+    if (this.rafId !== null) {
+      cancelAnimationFrame(this.rafId);
+      this.rafId = null;
+    }
+    
+    this.songEnded = false;
+    this.currentScore = 0;
+    this.currentCombo = 0;
+    this.hitFeedbacks = [];
+    this.feedbackCounter = 0;
 
+    for (const state of this.noteStates.values()) {
+      state.isHit = false;
+      state.isMissed = false;
+    }
+
+    this.scoringEngine = new ScoringEngine();
+    
+    this.timingEngine.start();
+    this.metronome.setAudioContext(this.timingEngine.getAudioContext());
+    this.start();
+  }
+
+  //Loop principal
   private loop = (): void => {
     if (!this.isRunning || this.isPaused) return;
 
     const currentTime = this.timingEngine.getCurrentTime();
-
+    
+    this.metronome.update(currentTime);
     this.checkMisses(currentTime);
     this.cleanupFeedbacks();
 
-    // Fim da música: 1s de buffer após a última nota
     if (!this.songEnded && currentTime >= this.chart.metadata.duration + 1.0) {
       this.songEnded = true;
-      this.stop();
       this.callbacks.onSongEnd(this.scoringEngine.getFinalScore());
+      //this.restart();
       return;
     }
 
-    // Emite dados de render para o canvas (toda frame)
+    // Emite dados de render para o canvas
     this.callbacks.onRender({
       currentTime,
       notes: Array.from(this.noteStates.values()),
       hitFeedbacks: [...this.hitFeedbacks],
+      beatFraction: this.metronome.getBeatFraction(),
+      isDownbeat: this.metronome.isDownbeat()
     });
 
     this.callbacks.onHUDUpdate({
@@ -174,21 +210,16 @@ export class GameLoop {
     this.rafId = requestAnimationFrame(this.loop);
   };
 
-  // ─── Detecção de misses ───────────────────────────────────────────────────
-
   private checkMisses(currentTime: number): void {
     for (const state of this.noteStates.values()) {
       if (state.isHit || state.isMissed) continue;
 
-      const noteTime = state.note.timeInSeconds;
-      if (currentTime - noteTime < MISS_THRESHOLD_S) continue;
+      const timeDiffMs = (currentTime - state.note.timeInSeconds) * 1000;
+      if (!this.hitDetector.isMissed(timeDiffMs)) continue;
 
       state.isMissed = true;
 
-      const hitResult = this.scoringEngine.evaluateHit(
-        noteTime * 1000,
-        (noteTime + 0.5) * 1000,
-      );
+      const hitResult = this.scoringEngine.recordHit('MISS', timeDiffMs);
 
       this.currentCombo = hitResult.combo;
       this.currentScore += hitResult.score;
@@ -203,17 +234,19 @@ export class GameLoop {
   private handleInput(midiNote: number, _velocity: number): void {
     const currentTime = this.timingEngine.getCurrentTime();
 
-    let best: { state: NoteRenderState; timeDiff: number } | null = null;
+    let best: { state: NoteRenderState; timeDiffMs: number; accuracy: HitType } | null = null;
 
     for (const state of this.noteStates.values()) {
       if (state.isHit || state.isMissed) continue;
       if (state.note.midiNote !== midiNote) continue;
 
-      const timeDiff = Math.abs(currentTime - state.note.timeInSeconds);
-      if (timeDiff > 0.150) continue;
+      const timeDiffMs = (currentTime - state.note.timeInSeconds) * 1000;
+      const accuracy = this.hitDetector.calculateAccuracy(timeDiffMs);
+      
+      if (!accuracy) continue;
 
-      if (!best || timeDiff < best.timeDiff) {
-        best = { state, timeDiff };
+      if (!best || Math.abs(timeDiffMs) < Math.abs(best.timeDiffMs)) {
+        best = { state, timeDiffMs, accuracy };
       }
     }
 
@@ -222,10 +255,7 @@ export class GameLoop {
 
     best.state.isHit = true;
 
-    const hitResult = this.scoringEngine.evaluateHit(
-      best.state.note.timeInSeconds * 1000,
-      currentTime * 1000,
-    );
+    const hitResult = this.scoringEngine.recordHit(best.accuracy, best.timeDiffMs);
 
     this.currentScore += hitResult.score;
     this.currentCombo = hitResult.combo;
@@ -255,7 +285,7 @@ export class GameLoop {
       if (e.repeat) return;
       const midiNote = KEYBOARD_MAP[e.key.toLowerCase()];
       if (midiNote !== undefined) {
-        this.handleInput(midiNote, 100);
+        this.handleInput(midiNote, 127);
       }
     };
     window.addEventListener('keydown', this.keydownHandler);

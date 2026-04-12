@@ -19,10 +19,10 @@ export interface AudioConfig {
 }
 
 export interface NoteData {
-    time: number;          // Ticks ou segundos
-    lane: number;          // 1-9 (lanes visuais)
-    midiNote: number;      // 36=kick, 38=snare, etc
-    velocity: number;      // 0-127
+    time: number;      
+    lane: number;
+    midiNote: number;
+    velocity: number;
 }
 
 export interface Chart {

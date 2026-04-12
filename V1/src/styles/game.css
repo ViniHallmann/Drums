@@ -1,0 +1,430 @@
+/* ============================================
+   GAME HUD - Overlay sobre o canvas
+   ============================================ */
+
+.game-hud {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.hud-section {
+  position: absolute;
+  pointer-events: none;
+}
+
+/* ============================================
+   SCORE DISPLAY - Topo Direito
+   ============================================ */
+
+.hud-top-right {
+  top: var(--spacing-lg);
+  right: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--spacing-sm);
+}
+
+.score-display {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  background-color: rgba(26, 26, 26, 0.8);
+  backdrop-filter: blur(8px);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+}
+
+.score-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.score-value {
+  font-size: 32px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+/* Combo Display */
+.combo-display {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  background-color: rgba(26, 26, 26, 0.8);
+  backdrop-filter: blur(8px);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: 6px;
+  border: 1px solid var(--border-subtle);
+  opacity: 0;
+  transform: scale(0.9);
+  transition: all var(--transition-medium);
+}
+
+.combo-display.active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.combo-value {
+  font-size: 20px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--accent-primary);
+}
+
+.combo-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ============================================
+   ACCURACY DISPLAY - Topo Esquerdo
+   ============================================ */
+
+.hud-top-left {
+  top: var(--spacing-lg);
+  left: var(--spacing-lg);
+}
+
+.accuracy-display {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+  background-color: rgba(26, 26, 26, 0.8);
+  backdrop-filter: blur(8px);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+}
+
+.accuracy-value {
+  font-size: 28px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.accuracy-label {
+  font-size: 18px;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+/* Cores dinâmicas de accuracy */
+.accuracy-display[data-accuracy="high"] .accuracy-value {
+  color: var(--success);
+}
+
+.accuracy-display[data-accuracy="medium"] .accuracy-value {
+  color: var(--warning);
+}
+
+.accuracy-display[data-accuracy="low"] .accuracy-value {
+  color: var(--error);
+}
+
+/* ============================================
+   PROGRESS BAR - Fundo
+   ============================================ */
+
+.hud-bottom {
+  bottom: var(--spacing-lg);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  max-width: 800px;
+}
+
+.progress-bar {
+  position: relative;
+  width: 100%;
+  height: 6px;
+  background-color: rgba(26, 26, 26, 0.8);
+  backdrop-filter: blur(8px);
+  border-radius: 3px;
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    var(--accent-primary) 0%,
+    var(--text-secondary) 100%
+  );
+  border-radius: 3px;
+  transition: width 100ms linear;
+  width: 0%;
+}
+
+.progress-time {
+  position: absolute;
+  top: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  font-size: 13px;
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+  background-color: rgba(26, 26, 26, 0.8);
+  backdrop-filter: blur(8px);
+  padding: 4px 12px;
+  border-radius: 4px;
+  border: 1px solid var(--border-subtle);
+  white-space: nowrap;
+}
+
+.time-separator {
+  color: var(--text-muted);
+}
+
+/* ============================================
+   HIT FEEDBACK - Centro da Tela
+   ============================================ */
+
+.hit-feedback {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-fast);
+}
+
+.hit-feedback.show {
+  animation: hitFeedbackPop 600ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.hit-text {
+  font-size: 48px;
+  font-weight: 900;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  display: block;
+  white-space: nowrap;
+}
+
+/* Cores por tipo de hit */
+.hit-text.perfect {
+  color: var(--accent-primary);
+  text-shadow: 
+    0 0 20px rgba(240, 240, 240, 0.6),
+    0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.hit-text.good {
+  color: var(--success);
+  text-shadow: 
+    0 0 20px rgba(136, 168, 128, 0.4),
+    0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.hit-text.ok {
+  color: var(--warning);
+  text-shadow: 
+    0 0 20px rgba(212, 165, 116, 0.4),
+    0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.hit-text.miss {
+  color: var(--error);
+  text-shadow: 
+    0 0 20px rgba(184, 116, 116, 0.4),
+    0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes hitFeedbackPop {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+  40% {
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* ============================================
+   DRUM COLORS - Cores por instrumento
+   ============================================ */
+
+:root {
+  /* Cores dos instrumentos (sutis e neutras) */
+  --color-kick: #d4a574;
+  --color-snare: #7494b8;
+  --color-hihat: #88a880;
+  --color-tom: #b88894;
+  --color-cymbal: #a89484;
+}
+
+/* ============================================
+   CANVAS LOADING STATE
+   ============================================ */
+
+#gameCanvas.loading {
+  opacity: 0.5;
+}
+
+#gameCanvas.ready {
+  opacity: 1;
+  transition: opacity var(--transition-medium);
+}
+
+/* ============================================
+   ANIMATIONS & TRANSITIONS
+   ============================================ */
+
+/* Pulsação suave para elementos ativos */
+@keyframes subtlePulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Slide in suave */
+@keyframes slideInFromRight {
+  from {
+    transform: translateX(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Fade in suave */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+.hidden {
+  display: none !important;
+}
+
+.disabled {
+  opacity: 0.4;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.no-select {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+}
+
+/* ============================================
+   RESPONSIVE ADJUSTMENTS
+   ============================================ */
+
+@media (max-width: 1400px) {
+  .score-value {
+    font-size: 28px;
+  }
+  
+  .hit-text {
+    font-size: 40px;
+  }
+  
+  .hud-bottom {
+    width: 70%;
+  }
+}
+
+@media (max-width: 1024px) {
+  .hud-top-left,
+  .hud-top-right {
+    top: var(--spacing-md);
+  }
+  
+  .hud-top-left {
+    left: var(--spacing-md);
+  }
+  
+  .hud-top-right {
+    right: var(--spacing-md);
+  }
+  
+  .score-display,
+  .accuracy-display {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+  
+  .score-value {
+    font-size: 24px;
+  }
+  
+  .accuracy-value {
+    font-size: 24px;
+  }
+  
+  .hit-text {
+    font-size: 32px;
+  }
+  
+  .hud-bottom {
+    width: 80%;
+    bottom: var(--spacing-md);
+  }
+}
+
+@media (max-width: 768px) {
+  .combo-display {
+    display: none;
+  }
+  
+  .progress-time {
+    font-size: 11px;
+    padding: 3px 8px;
+  }
+  
+  .hit-text {
+    font-size: 28px;
+  }
+}

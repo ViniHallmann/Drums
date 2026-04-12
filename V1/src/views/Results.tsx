@@ -11,7 +11,8 @@ interface ResultsProps {
 export default function Results({ score, chart, onReplay, onExit }: ResultsProps) {
   const perfectCount = score.hits.filter((h) => h.type === 'PERFECT').length;
   const goodCount    = score.hits.filter((h) => h.type === 'GOOD').length;
-  const okCount      = score.hits.filter((h) => h.type === 'OK').length;
+  const earlyCount   = score.hits.filter((h) => h.type === 'EARLY').length;
+  const lateCount    = score.hits.filter((h) => h.type === 'LATE').length;
   const missCount    = score.hits.filter((h) => h.type === 'MISS').length;
 
   return (
@@ -70,10 +71,11 @@ export default function Results({ score, chart, onReplay, onExit }: ResultsProps
           <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', letterSpacing: 1, marginBottom: 14 }}>
             BREAKDOWN
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 8 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8 }}>
             <HitBreakdown label="PERFECT" count={perfectCount} color="#FFD740" />
             <HitBreakdown label="GOOD"    count={goodCount}    color="#69F0AE" />
-            <HitBreakdown label="OK"      count={okCount}      color="#FF9800" />
+            <HitBreakdown label="EARLY"   count={earlyCount}   color="#FF9800" />
+            <HitBreakdown label="LATE"    count={lateCount}    color="#FF9800" />
             <HitBreakdown label="MISS"    count={missCount}    color="#FF5252" />
           </div>
         </div>

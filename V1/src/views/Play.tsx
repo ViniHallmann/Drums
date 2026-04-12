@@ -3,6 +3,8 @@ import { Chart } from '../types/Chart';
 import { Score, HitResult } from '../types/Score';
 import { GameLoop, GameRenderData, GameHUDState } from '../core/GameLoop';
 import { Highway, HighwayRef } from '../components/game/Highway';
+import '../styles/main.css';
+import '../styles/game.css';
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
 
@@ -94,109 +96,95 @@ export default function Play({ chart, onGameEnd, onExit }: PlayProps) {
 
   // ─── Render ─────────────────────────────────────────────────────────────
   return (
-    <div style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden', background: '#0a0a0a' }}>
-
-      {/* Componente que agora detém e orquestra inteiramente o Canvas de renderização das notas */}
-      <div style={{ display: 'block', position: 'absolute', inset: 0, top: 40, bottom: 20 }}>
-        <Highway ref={highwayRef} chart={chart} />
-      </div>
-
-      {/* HUD — topo */}
-      <div style={{
-        position: 'absolute', top: 0, left: 0, right: 0,
-        padding: '12px 20px',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        background: 'linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, transparent 100%)',
-        pointerEvents: 'none',
-      }}>
-        {/* Botão voltar */}
-        <button
-          onClick={onExit}
-          style={{ pointerEvents: 'all', background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', padding: '6px 14px', borderRadius: 6, cursor: 'pointer', fontSize: 13 }}
-        >
-          ← Sair
-        </button>
-
-        {/* Título */}
-        <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13, textAlign: 'center' }}>
-          <div style={{ color: '#fff', fontWeight: 600 }}>{chart.metadata.title}</div>
-          <div>{chart.metadata.artist ?? 'Unknown Artist'} · {chart.metadata.bpm} BPM</div>
-        </div>
-
-        {/* Pause */}
-        <button
-          onClick={togglePause}
-          style={{ pointerEvents: 'all', background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', padding: '6px 14px', borderRadius: 6, cursor: 'pointer', fontSize: 13 }}
-        >
-          {isPaused ? '▶' : '⏸'}
-        </button>
-      </div>
-
-      {/* HUD — score / combo / accuracy */}
-      <div style={{
-        position: 'absolute', top: 56, left: '50%', transform: 'translateX(-50%)',
-        display: 'flex', gap: 32, pointerEvents: 'none',
-      }}>
-        <HUDStat label="SCORE" value={hud.score.toLocaleString()} />
-        <HUDStat label="COMBO" value={`${hud.combo}x`} highlight={hud.combo >= 10} />
-        <HUDStat label="ACCURACY" value={`${hud.accuracy.toFixed(1)}%`} />
-      </div>
-
-      {/* Progress bar — rodapé */}
-      <div style={{
-        position: 'absolute', bottom: 0, left: 0, right: 0,
-        height: 4,
-        background: 'rgba(255,255,255,0.1)',
-        pointerEvents: 'none',
-      }}>
-        <div style={{
-          height: '100%',
-          width: `${hud.progress * 100}%`,
-          background: 'linear-gradient(to right, #448AFF, #69F0AE)',
-          transition: 'width 0.1s linear',
-        }} />
-      </div>
-
-      {/* Legenda do teclado (só quando não started) */}
-      {!isStarted && (
-        <div style={{
-          position: 'absolute', bottom: 20, left: '50%', transform: 'translateX(-50%)',
-          color: 'rgba(255,255,255,0.4)', fontSize: 12, textAlign: 'center', pointerEvents: 'none',
-        }}>
-          Teclado: <kbd style={kbdStyle}>A</kbd> Kick · <kbd style={kbdStyle}>S</kbd> Snare · <kbd style={kbdStyle}>D</kbd> Hi-hat ·
-          <kbd style={kbdStyle}>F</kbd> Hi-hat open · <kbd style={kbdStyle}>J</kbd> Tom↑ · <kbd style={kbdStyle}>K</kbd> Tom · <kbd style={kbdStyle}>L</kbd> Tom↓
-        </div>
-      )}
-
-      {/* Tela de início */}
-      {!isStarted && (
-        <Overlay>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 28, fontWeight: 700, color: '#fff', marginBottom: 8 }}>
-              {chart.metadata.title}
-            </div>
-            <div style={{ color: 'rgba(255,255,255,0.5)', marginBottom: 32 }}>
-              {chart.metadata.bpm} BPM · {chart.metadata.difficulty} · {Math.ceil(chart.metadata.duration)}s
-            </div>
-            <button onClick={handleStart} style={primaryBtnStyle}>
-              ▶ Iniciar
-            </button>
+    <div className="app-container">
+      {/* HUD superior - Informações Gerais */}
+      <header className="app-header">
+        <div className="header-left">
+          <button onClick={onExit} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', padding: '6px 14px', borderRadius: 6, cursor: 'pointer', fontSize: 13 }}>← Sair</button>
+          <div className="midi-status midi-status-connected">
+            <div className="status-indicator"></div>
+            <span>{chart.metadata.title}</span>
           </div>
-        </Overlay>
+        </div>
+        
+        <div className="header-center">
+          <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13, textAlign: 'center' }}>
+            <div style={{ color: '#fff', fontWeight: 600 }}>{chart.metadata.title}</div>
+            <div>{chart.metadata.artist ?? 'Unknown Artist'} · {chart.metadata.bpm} BPM</div>
+          </div>
+        </div>
+
+        <div className="header-right">
+          <button onClick={togglePause} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', padding: '6px 14px', borderRadius: 6, cursor: 'pointer', fontSize: 13 }}>
+            {isPaused ? '▶' : '⏸'}
+          </button>
+        </div>
+      </header>
+
+      <main className="game-container">
+        <div style={{ position: 'absolute', inset: 0 }}>
+          <Highway ref={highwayRef} chart={chart} />
+        </div>
+        
+        <div className="game-hud">
+          {/* Topo Esquerdo: Accuracy */}
+          <div className="hud-section hud-top-left">
+            <div className="accuracy-display" data-accuracy={hud.accuracy > 90 ? 'high' : hud.accuracy > 70 ? 'medium' : 'low'}>
+              <span className="accuracy-value">{hud.accuracy.toFixed(1)}</span>
+              <span className="accuracy-label">%</span>
+            </div>
+          </div>
+
+          {/* Topo Direito: Score & Combo */}
+          <div className="hud-section hud-top-right">
+            <div className="score-display">
+              <span className="score-label">Score</span>
+              <span className="score-value">{hud.score.toLocaleString()}</span>
+            </div>
+            <div className={`combo-display ${hud.combo >= 10 ? 'active' : ''}`}>
+              <span className="combo-value">{hud.combo}</span>
+              <span className="combo-label">Combo</span>
+            </div>
+          </div>
+
+          {/* Base: Progress Bar */}
+          <div className="hud-section hud-bottom">
+            <div className="progress-bar">
+              <div className="progress-fill" style={{ width: `${hud.progress * 100}%` }}></div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      {/* Legenda do teclado */}
+      {!isStarted && (
+        <div style={{ position: 'absolute', bottom: 20, left: '50%', transform: 'translateX(-50%)', color: 'rgba(255,255,255,0.4)', fontSize: 12, textAlign: 'center', pointerEvents: 'none' }}>
+          Teclado: <kbd>A</kbd> Kick · <kbd>S</kbd> Snare · <kbd>D</kbd> Hi-hat · <kbd>F</kbd> Hi-hat open · <kbd>J</kbd> Tom↑ · <kbd>K</kbd> Tom · <kbd>L</kbd> Tom↓
+        </div>
       )}
 
-      {/* Menu de pausa */}
+      {/* Telas Overlay */}
+      {!isStarted && (
+        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.8)', zIndex: 100 }}>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: 28, fontWeight: 700, color: '#fff', marginBottom: 8 }}>{chart.metadata.title}</div>
+            <div style={{ color: 'rgba(255,255,255,0.5)', marginBottom: 32 }}>{chart.metadata.bpm} BPM · {chart.metadata.difficulty} · {Math.ceil(chart.metadata.duration)}s</div>
+            <button onClick={handleStart} style={{ background: '#448AFF', color: 'white', padding: '12px 32px', borderRadius: 8, fontSize: 18, border: 'none', cursor: 'pointer' }}>▶ Iniciar</button>
+          </div>
+        </div>
+      )}
+
       {isPaused && isStarted && (
-        <Overlay>
+        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.8)', zIndex: 100 }}>
           <div style={{ textAlign: 'center', minWidth: 220 }}>
             <div style={{ fontSize: 22, fontWeight: 700, color: '#fff', marginBottom: 24 }}>PAUSA</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <button onClick={togglePause} style={primaryBtnStyle}>▶ Continuar</button>
-              <button onClick={handleRestart} style={secondaryBtnStyle}>↺ Reiniciar</button>
-              <button onClick={onExit} style={secondaryBtnStyle}>← Sair</button>
+              <button onClick={togglePause} style={{ background: '#448AFF', color: 'white', padding: '12px 32px', borderRadius: 8, fontSize: 18, border: 'none', cursor: 'pointer' }}>▶ Continuar</button>
+              <button onClick={handleRestart} style={{ background: '#333', color: 'white', padding: '12px 32px', borderRadius: 8, fontSize: 18, border: 'none', cursor: 'pointer' }}>↺ Reiniciar</button>
+              <button onClick={onExit} style={{ background: '#333', color: 'white', padding: '12px 32px', borderRadius: 8, fontSize: 18, border: 'none', cursor: 'pointer' }}>← Sair</button>
             </div>
           </div>
-        </Overlay>
+        </div>
       )}
     </div>
   );

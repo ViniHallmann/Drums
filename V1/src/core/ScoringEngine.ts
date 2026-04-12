@@ -1,16 +1,11 @@
 import { HitResult, HitType, Score } from '../types/Score';
 
 export class ScoringEngine {
-	private readonly TIMING_WINDOWS = {
-		PERFECT: 50,   // ±50ms
-		GOOD: 100,     // ±100ms
-		OK: 150,       // ±150ms
-	};
-
-	private readonly SCORE_VALUES = {
+	private readonly SCORE_VALUES: Record<HitType, number> = {
 		PERFECT: 100,
 		GOOD: 75,
-		OK: 50,
+		EARLY: 25,
+		LATE: 25,
 		MISS: 0,
 	};
 
@@ -19,37 +14,26 @@ export class ScoringEngine {
 	private totalScore: number = 0;
 	private hits: HitResult[] = [];
 
-	evaluateHit(noteTime: number, hitTime: number): HitResult {
-		const timeDiff = Math.abs(noteTime - hitTime);
-
-		let result: HitType;
-		if (timeDiff <= this.TIMING_WINDOWS.PERFECT) {
-			result = 'PERFECT';
-			this.combo++;
-		} else if (timeDiff <= this.TIMING_WINDOWS.GOOD) {
-			result = 'GOOD';
-			this.combo++;
-		} else if (timeDiff <= this.TIMING_WINDOWS.OK) {
-			result = 'OK';
-			this.combo++;
-		} else {
-			result = 'MISS';
+	recordHit(resultType: HitType, timeDiff: number): HitResult {
+		if (resultType === 'MISS') {
 			this.combo = 0;
+		} else {
+			this.combo++;
 		}
 
 		this.maxCombo = Math.max(this.maxCombo, this.combo);
 		
-		const score = this.SCORE_VALUES[result];
+		const baseScore = this.SCORE_VALUES[resultType];
 		const multiplier = this.getComboMultiplier(this.combo);
-		const finalScore = score * multiplier;
+		const finalScore = baseScore * multiplier;
 
 		this.totalScore += finalScore;
 
 		const hitResult: HitResult = {
-		type: result,
-		timeDiff,
-		score: finalScore,
-		combo: this.combo,
+			type: resultType,
+			timeDiff,
+			score: finalScore,
+			combo: this.combo,
 		};
 
 		this.hits.push(hitResult);
@@ -67,10 +51,11 @@ export class ScoringEngine {
 		if (this.hits.length === 0) return 0;
 		
 		const perfectHits = this.hits.filter(h => h.type === 'PERFECT').length;
-		const goodHits 	  = this.hits.filter(h => h.type === 'GOOD').length;
-		const okHits 	  = this.hits.filter(h => h.type === 'OK').length;
+		const goodHits    = this.hits.filter(h => h.type === 'GOOD').length;
+		const earlyHits   = this.hits.filter(h => h.type === 'EARLY').length;
+		const lateHits    = this.hits.filter(h => h.type === 'LATE').length;
 		
-		const weighted = (perfectHits * 100) + (goodHits * 75) + (okHits * 50);
+		const weighted = (perfectHits * 100) + (goodHits * 75) + (earlyHits * 25) + (lateHits * 25);
 		return (weighted / (this.hits.length * 100)) * 100;
 	}
 

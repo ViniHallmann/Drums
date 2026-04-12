@@ -6,12 +6,15 @@ export class TimingEngine {
     private bpm: number;
     private isPlaying: boolean = false;
 
-    constructor(bpm: number) {
-        this.audioContext = new AudioContext();
+    constructor(bpm: number, audioContext?: AudioContext) {
+        this.audioContext = audioContext || new (window.AudioContext || (window as any).webkitAudioContext)();
         this.bpm = bpm;
     }
 
     start(): void {
+        if (this.audioContext.state === 'suspended') {
+            this.audioContext.resume();
+        }
         this.startTime = this.audioContext.currentTime;
         this.isPlaying = true;
     }
@@ -26,17 +29,16 @@ export class TimingEngine {
         return (time / 60) * this.bpm;
     }
 
+    getBpm(): number {
+        return this.bpm;
+    }
+
     ticksToSeconds(ticks: number, ticksPerBeat: number = 256): number {
         const beats = ticks / ticksPerBeat;
         return (beats / this.bpm) * 60;
     }
 
-    scheduleNote(note: Note, callback: () => void): void {
-        const playTime = this.startTime + note.timeInSeconds;
-        const currentTime = this.audioContext.currentTime;
-        
-        if (playTime > currentTime) {
-        setTimeout(() => callback(), (playTime - currentTime) * 1000);
-        }
+    getAudioContext(): AudioContext {
+        return this.audioContext;
     }
 }

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
+import React, { useRef, useEffect, useImperativeHandle } from 'react';
 import { DRUM_ORDER, DRUM_LABELS, DRUM_COLORS, FEEDBACK_COLORS, GAME_CONFIG } from '../../constants/game';
 import { Chart } from '../../types/Chart';
 import { GameRenderData } from '../../core/GameLoop';
@@ -67,6 +67,9 @@ export const Highway = React.forwardRef<HighwayRef, HighwayProps>(({ chart }, re
     const container = containerRef.current;
     if (!canvas || !container) return;
 
+    canvas.width = container.clientWidth || 800;
+    canvas.height = container.clientHeight || 600;
+
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
         canvas.width = entry.contentRect.width;
@@ -91,7 +94,7 @@ export const Highway = React.forwardRef<HighwayRef, HighwayProps>(({ chart }, re
       const H = Math.max(canvas.height, GAME_CONFIG.HIGHWAY_TOP_MARGIN + NUM_LANES * GAME_CONFIG.LANE_HEIGHT);
       const PIXELS_PER_SECOND = (W - GAME_CONFIG.HIT_LINE_OFFSET) / GAME_CONFIG.LOOK_AHEAD_S;
 
-      const { currentTime, notes, hitFeedbacks } = data;
+      const { currentTime, notes, hitFeedbacks, beatFraction, isDownbeat } = data;
 
       // Fundo
       ctx.clearRect(0, 0, W, H);
@@ -127,16 +130,19 @@ export const Highway = React.forwardRef<HighwayRef, HighwayProps>(({ chart }, re
       ctx.fillStyle = 'rgba(255, 255, 255, 0.03)';
       ctx.fillRect(GAME_CONFIG.HIT_LINE_OFFSET - windowPx, GAME_CONFIG.HIGHWAY_TOP_MARGIN, windowPx * 2, NUM_LANES * GAME_CONFIG.LANE_HEIGHT);
 
+      // Pulso Metronomo na HitLine
+      const flashAlpha = Math.max(0, 1 - (beatFraction * 4));
+      
       // Linha do Hit Detector
       ctx.strokeStyle = '#eab308';
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 2 + (flashAlpha * 2);
       ctx.beginPath();
       ctx.moveTo(GAME_CONFIG.HIT_LINE_OFFSET, GAME_CONFIG.HIGHWAY_TOP_MARGIN);
       ctx.lineTo(GAME_CONFIG.HIT_LINE_OFFSET, base_y);
       ctx.stroke();
 
-      ctx.shadowColor = '#eab308';
-      ctx.shadowBlur = 10;
+      ctx.shadowColor = isDownbeat ? '#ffffff' : '#eab308';
+      ctx.shadowBlur = 10 + (flashAlpha * 10);
       ctx.stroke();
       ctx.shadowBlur = 0;
 
@@ -185,21 +191,19 @@ export const Highway = React.forwardRef<HighwayRef, HighwayProps>(({ chart }, re
   }));
 
   return (
-    <div className="flex h-full w-full bg-[#111111] overflow-hidden">
+    <div style={{ display: 'flex', height: '100%', width: '100%', backgroundColor: '#111111', overflow: 'hidden' }}>
       {/* Barra lateral fixa de Instrumentos */}
-      <div className="flex flex-col w-48 bg-[#1a1a1a] shadow-lg z-10 shrink-0" style={{ paddingTop: `${GAME_CONFIG.HIGHWAY_TOP_MARGIN}px` }}>
+      <div style={{ display: 'flex', flexDirection: 'column', width: '12rem', backgroundColor: '#1a1a1a', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)', zIndex: 10, flexShrink: 0, paddingTop: `${GAME_CONFIG.HIGHWAY_TOP_MARGIN}px` }}>
         {drumEntries.map(([drumPiece, laneIndex]) => {
           const name = DRUM_LABELS[laneIndex];
           const color = DRUM_COLORS[drumPiece] || DRUM_COLORS.unknown;
           return (
             <div 
               key={drumPiece} 
-              className="flex items-center justify-start px-4 text-xs font-bold text-gray-400 border-b border-[#222]"
-              style={{ height: `${GAME_CONFIG.LANE_HEIGHT}px` }}
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', paddingLeft: '1rem', paddingRight: '1rem', fontSize: '0.75rem', fontWeight: 700, color: '#9ca3af', borderBottomWidth: '1px', borderColor: '#222', height: `${GAME_CONFIG.LANE_HEIGHT}px` }}
             >
               <div 
-                className="w-2 h-2 rounded-full mr-3" 
-                style={{ backgroundColor: color }} 
+                style={{ width: '0.5rem', height: '0.5rem', borderRadius: '9999px', marginRight: '0.75rem', backgroundColor: color }} 
               />
               {name}
             </div>
@@ -208,8 +212,8 @@ export const Highway = React.forwardRef<HighwayRef, HighwayProps>(({ chart }, re
       </div>
 
       {/* Área da Pista de Rolamento (Canvas ou DIVs) */}
-      <div ref={containerRef} className="relative flex-1 bg-[#0a0a0a]">
-        <canvas ref={canvasRef} className="w-full h-full block" />
+      <div ref={containerRef} style={{ position: 'relative', flex: '1 1 0%', backgroundColor: '#0a0a0a' }}>
+        <canvas ref={canvasRef} style={{ width: '100%', height: '100%', display: 'block' }} />
       </div>
     </div>
   );
