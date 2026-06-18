@@ -57,7 +57,7 @@ function configureEventBus(eventBus, hitDetector, audioEngine) {
 
     eventBus.on('note:hit', (data) => {
         Logger.info(`Evento: Nota acertada! Time diff: ${data.timeDiff.toFixed(3)}s`, data.note);
-        const instrumentName = data.note.config.input.midiMapping[data.note.lane].name;
+        const instrumentName = data.note.instrumentName;
         audioEngine.playSample(instrumentName, data.note.velocity);
     });
 
@@ -102,7 +102,7 @@ function setupKeyboardControls(game, eventBus) {
 
 async function initApp() {
     const eventBus = new EventBus();
-    const midiManager = new MIDIManager(eventBus, Config.input.midiMapping);
+    const midiManager = new MIDIManager(eventBus);
     const renderer = new Renderer(canvas, Config.visual);
     const game = new Game(eventBus, renderer, midiManager, Config);
 

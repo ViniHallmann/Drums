@@ -1,7 +1,4 @@
-import Logger from '../utils/Logger.js';
-import Metronome from './Metronome.js';
-
-
+import { lanes } from '../domain/instruments';
 
 const VisualConfig = {
     CANVAS_WIDTH: 1280,
@@ -26,19 +23,29 @@ const VisualConfig = {
 };
 
 const GameplayConfig = {
-    scrollSpeed: 300, 
-    hitWindow: 0.15, 
+    scrollSpeed: 300,
+    hitWindow: 0.15,
     lookAheadTime: 4,
     scorePerHit: 100,
     maxComboMultiplier: 5,
-    CHART_START_DELAY: 2.0, 
+    CHART_START_DELAY: 2.0,
     difficultyLevels: {
         easy: 1,
         medium: 2,
         hard: 3,
         expert: 4,
     },
-    activeLanes: ['kick', 'snare', 'hiHatClosed', 'hiHatOpen', 'crashCymbal', 'rideCymbal', 'highTom', 'midTom', 'floorTom'],
+    activeLanes: [
+        'kick',
+        'snare',
+        'hiHatClosed',
+        'hiHatOpen',
+        'crashCymbal',
+        'rideCymbal',
+        'highTom',
+        'midTom',
+        'floorTom',
+    ],
     earlyHitWindow: 0.25,
     lateHitWindow: 0.25,
 };
@@ -57,96 +64,14 @@ const AudioConfig = {
 };
 
 const InputConfig = {
-    midiMapping: [
-        {
-            midiNote: 51,
-            name: 'rideCymbal',
-            lane: 0,
-            color: '#ffcc00',
-            sample: 'ride.wav',
-            aliases: []
-        },
-        {
-            midiNote: 41,
-            name: 'floorTom',
-            lane: 1,
-            color: '#ff3333',
-            sample: 'floortom.wav',
-            aliases: [43, 44]
-        },
-        {
-            midiNote: 48,
-            name: 'highTom',
-            lane: 2,
-            color: '#ff6666',
-            sample: 'hightom.wav',
-            aliases: []
-        },
-        {
-            midiNote: 45,
-            name: 'midTom',
-            lane: 3,
-            color: '#ff9966',
-            sample: 'midtom.wav',
-            aliases: []
-        },
-        {
-            midiNote: 49,
-            name: 'crashCymbal',
-            lane: 4,
-            color: '#ffcc00',
-            sample: 'crash.wav',
-            aliases: []
-        },
-        {
-            midiNote: 46,
-            name: 'hiHatOpen',
-            lane: 5,
-            color: '#cccccc',
-            sample: 'hihat_open.wav',
-            aliases: [45]
-        },
-        {
-            midiNote: 42,
-            name: 'hiHatClosed',
-            lane: 6,
-            color: '#cccccc',
-            sample: 'hihat_closed.wav',
-            aliases: [41]
-        },
-        {
-            midiNote: 38,
-            name: 'snare',
-            lane: 7,
-            color: '#ffffff',
-            sample: 'snare.wav',
-            aliases: [40]
-        },
-        {
-            midiNote: 36,
-            name: 'kick',
-            lane: 8,
-            color: '#d4a574',
-            sample: 'kick.wav',
-            aliases: [35]
-        }
-        
-    ],
-    keyMapping: {
-        kick: 'A',
-        snare: 'S',
-        hiHatClosed: 'D',
-        hiHatOpen: 'F',
-        crashCymbal: 'G',
-        rideCymbal: 'H',
-        highTom: 'I',
-        midTom: 'J',
-        floorTom: 'K',
-    },
+    // Fonte única do mapeamento de instrumentos: src/domain/instruments.
+    // Não redefinir nome/lane/midiNote/cor aqui — apenas referenciar a derivação.
+    midiMapping: lanes,
+    keyMapping: Object.fromEntries(lanes.map((drum) => [drum.name, drum.key])),
     inputBufferTime: 0.1,
     velocityRange: [0, 127],
-    midiChannel: 10, 
-    sensibilityThreshold: 10
+    midiChannel: 10,
+    sensibilityThreshold: 10,
 };
 
 const TimingConfig = {
@@ -162,10 +87,10 @@ const UIConfig = {
     comboColor: '#FFD700',
     showHitEffects: true,
     hitEffectDuration: 0.3,
-    scoreHUDPosition: [10, 30], 
-    comboHUDPosition: [10, 60], 
-    percentageHUDPosition: [10, 90], 
-    fpsHUDPosition: [700, 30], 
+    scoreHUDPosition: [10, 30],
+    comboHUDPosition: [10, 60],
+    percentageHUDPosition: [10, 90],
+    fpsHUDPosition: [700, 30],
 };
 
 const MetronomeConfig = {
@@ -204,12 +129,30 @@ const DIFFICULTY_PROFILES = {
     hard: {
         scrollSpeed: 400,
         hitWindow: 0.1,
-        activeLanes: ['kick', 'snare', 'hiHatClosed', 'hiHatOpen', 'crashCymbal', 'rideCymbal', 'highTom'],
+        activeLanes: [
+            'kick',
+            'snare',
+            'hiHatClosed',
+            'hiHatOpen',
+            'crashCymbal',
+            'rideCymbal',
+            'highTom',
+        ],
     },
     expert: {
         scrollSpeed: 500,
         hitWindow: 0.08,
-        activeLanes: ['kick', 'snare', 'hiHatClosed', 'hiHatOpen', 'crashCymbal', 'rideCymbal', 'highTom', 'midTom', 'floorTom'],
+        activeLanes: [
+            'kick',
+            'snare',
+            'hiHatClosed',
+            'hiHatOpen',
+            'crashCymbal',
+            'rideCymbal',
+            'highTom',
+            'midTom',
+            'floorTom',
+        ],
     },
 };
 

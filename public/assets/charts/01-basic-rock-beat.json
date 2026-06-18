@@ -4,7 +4,9 @@
     "artist": null,
     "bpm": 105,
     "duration": 2.29,
-    "difficulty": "easy"
+    "difficulty": "easy",
+    "timeUnit": "ticks",
+    "ticksPerBeat": 128
   },
   "audio": {
     "backingTrack": null
@@ -66,7 +68,7 @@
     },
     {
       "time": 384,
-      "lane": 6,
+      "lane": 7,
       "midiNote": 38,
       "velocity": 127
     },

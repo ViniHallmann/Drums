@@ -4,7 +4,8 @@
     "artist": "Exercise",
     "bpm": 120,
     "duration": 32,
-    "difficulty": "intermediate"
+    "difficulty": "intermediate",
+    "timeUnit": "seconds"
   },
   "audio": {
     "backingTrack": null

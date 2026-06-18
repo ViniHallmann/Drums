@@ -1,4 +1,4 @@
-import  NoteHighway  from '../gameplay/NoteHighway.js';
+import NoteHighway from '../gameplay/NoteHighway.js';
 import HitDetector from '../gameplay/HitDetector.js';
 import Logger from '../utils/Logger.js';
 import GameClock from './GameClock.js';
@@ -9,24 +9,24 @@ import MetronomeVisual from '../ui/MetronomeVisual.js';
 
 export default class Game {
     constructor(eventBus, renderer, midiManager, config) {
-        this.eventBus    = eventBus;
-        this.renderer    = renderer;
+        this.eventBus = eventBus;
+        this.renderer = renderer;
         this.midiManager = midiManager;
-        this.config      = config;
+        this.config = config;
 
-        this.isRunning     = false;
-        this.isPlaying     = false;
-        this.currentChart  = null;
+        this.isRunning = false;
+        this.isPlaying = false;
+        this.currentChart = null;
         this.lastFrameTime = 0;
-        this.deltaTime     = 0;
+        this.deltaTime = 0;
 
-        this.clock           = new GameClock();
-        this.noteHighway     = new NoteHighway(this.renderer, this.config);
-        this.hitDetector     = new HitDetector(this.eventBus, this.config.gameplay);
-        this.metronome       = new Metronome(this.config);
-        this.metronomeVisual = new MetronomeVisual(this.metronome, this.config); 
-        this.audioEngine     = new AudioEngine(this.config.audio);
-        this.chartLoader     = new ChartLoader(this.config);
+        this.clock = new GameClock();
+        this.noteHighway = new NoteHighway(this.renderer, this.config);
+        this.hitDetector = new HitDetector(this.eventBus, this.config.gameplay);
+        this.metronome = new Metronome(this.config);
+        this.metronomeVisual = new MetronomeVisual(this.metronome, this.config);
+        this.audioEngine = new AudioEngine(this.config.audio);
+        this.chartLoader = new ChartLoader(this.config);
 
         this.gameLoop = this.gameLoop.bind(this);
     }
@@ -34,6 +34,9 @@ export default class Game {
     async loadChart(chartPath) {
         try {
             this.currentChart = await this.chartLoader.loadChart(chartPath);
+            const bpm = this.currentChart.metadata.bpm;
+            this.metronome.setBPM(bpm);
+            this.noteHighway.setBPM(bpm);
             this.noteHighway.loadChart(this.currentChart.notes);
             Logger.info(`Chart loaded: ${this.currentChart.metadata.title}`);
             return this.currentChart;
@@ -55,7 +58,7 @@ export default class Game {
         await this.loadDefaultChart();
         await this.audioEngine.init();
     }
-    
+
     start() {
         if (this.isRunning) return;
         this.isRunning = true;
@@ -80,7 +83,7 @@ export default class Game {
 
         this.deltaTime = (currentTime - this.lastFrameTime) / 1000;
         this.lastFrameTime = currentTime;
-        
+
         this.update(this.deltaTime);
         this.render();
 
@@ -89,7 +92,7 @@ export default class Game {
 
     update(deltaTime) {
         const currentTime = this.clock.getCurrentTime();
-    
+
         if (this.isPlaying) {
             //this.checkChartLoop();
             this.metronome.update(currentTime);
@@ -129,10 +132,10 @@ export default class Game {
 
     // checkChartLoop() {
     //     if (!this.currentChart) return;
-        
+
     //     const chartDuration = this.currentChart.metadata.duration || this.getChartDuration();
     //     const currentTime = this.clock.getCurrentTime();
-        
+
     //     if (currentTime >= chartDuration && !this.isLooping) {
     //         this.isLooping = true;
     //         this.restartChart();
@@ -151,26 +154,13 @@ export default class Game {
     resetChart() {
         this.noteHighway.currentNoteIndex = 0;
         this.noteHighway.activeNotes = [];
-        
+
         if (this.currentChart) {
             this.noteHighway.loadChart(this.currentChart.notes);
         }
     }
 
     getChartDuration() {
-        if (!this.currentChart || !this.currentChart.notes.length) return 0;
-        
-        const lastNote = this.currentChart.notes[this.currentChart.notes.length - 1];
-        return this.convertTicksToSeconds(lastNote.time) + 2;
+        return this.currentChart?.metadata?.duration ?? 0;
     }
-
-    convertTicksToSeconds(ticks) {
-        const bpm = this.currentChart?.metadata?.bpm || 120;
-        const ticksPerBeat = 128;
-        const beatsPerSecond = bpm / 60;
-        const ticksPerSecond = ticksPerBeat * beatsPerSecond;
-        
-        return ticks / ticksPerSecond;
-    }
-
 }
