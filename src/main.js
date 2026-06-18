@@ -29,8 +29,6 @@ function configureButtons() {
         const event = new KeyboardEvent('keydown', { code: 'KeyR' });
         document.dispatchEvent(event);
     });
-
-
 }
 
 function configureEventBus(eventBus, hitDetector, audioEngine) {
@@ -66,7 +64,6 @@ function configureEventBus(eventBus, hitDetector, audioEngine) {
     eventBus.on('note:miss', (data) => {
         Logger.info(`Evento: Nota perdida! (note: ${data.note.midiNote})`);
     });
-       
 }
 
 function setupKeyboardControls(game, eventBus) {
@@ -76,17 +73,21 @@ function setupKeyboardControls(game, eventBus) {
             if (game.clock.isRunning) {
                 game.pauseMusic();
             } else {
-                game.clock.getCurrentTime() === 0 ? game.startMusic() : game.resumeMusic();
+                if (game.clock.getCurrentTime() === 0) {
+                    game.startMusic();
+                } else {
+                    game.resumeMusic();
+                }
             }
         }
-        
+
         if (e.code === 'KeyR') {
             game.clock.reset();
             game.noteHighway.currentNoteIndex = 0;
             game.noteHighway.activeNotes = [];
             game.startMusic();
         }
-        
+
         if (e.code === 'KeyK') {
             eventBus.emit('midi:hit', { note: 36, name: 'KICK', lane: 0, velocity: 100 });
         }
@@ -96,15 +97,14 @@ function setupKeyboardControls(game, eventBus) {
         if (e.code === 'KeyH') {
             eventBus.emit('midi:hit', { note: 42, name: 'HIHAT CLOSED', lane: 2, velocity: 100 });
         }
-        
     });
 }
 
 async function initApp() {
-    const eventBus      = new EventBus();
-    const midiManager   = new MIDIManager(eventBus, Config.input.midiMapping);
-    const renderer      = new Renderer(canvas, Config.visual);
-    const game          = new Game(eventBus, renderer, midiManager, Config);
+    const eventBus = new EventBus();
+    const midiManager = new MIDIManager(eventBus, Config.input.midiMapping);
+    const renderer = new Renderer(canvas, Config.visual);
+    const game = new Game(eventBus, renderer, midiManager, Config);
 
     //const isConnected = await midiManager.init();
 
@@ -117,5 +117,3 @@ async function initApp() {
 
 configureButtons();
 initApp();
-    
-
